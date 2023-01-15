@@ -11,7 +11,12 @@
 
 ### 주의사항
 - commit, push 하기 전에 pull 하기
-- 기능 구현의 브랜치명은'feat/구현한기능'으로 통일 (따옴표 빼기)
+- commit 메세지 규칙
+  * 기능 구현 -> `feat:설명`
+  * 수정 -> `refactor:설명`
+- 브랜치명 규칙
+  * 기능 구현 -> `feat/설명`
+  * 수정 -> `refactor/설명`
 - 작업한 브랜치에서 develop 브랜치로 push하고 PR 하기(checkout으로 브랜치 확인 꼭 하기)
 - 자신이 해야할 일 Issues에 기록하기
 - PR에서 관련된 Issues 번호 표시하기
