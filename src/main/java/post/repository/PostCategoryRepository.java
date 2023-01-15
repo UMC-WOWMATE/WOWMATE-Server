@@ -1,6 +1,6 @@
-package Repository;
+package post.repository;
 
-import domain.PostCategory;
+import post.domain.PostCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostCategoryRepository extends JpaRepository<PostCategory, Long> {

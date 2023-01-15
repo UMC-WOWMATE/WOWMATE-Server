@@ -1,10 +1,13 @@
-package domain;
+package post.domain;
 
+import comment.domain.Comment;
 import lombok.Getter;
 import lombok.Setter;
+import user.domain.User;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -39,10 +42,6 @@ public class Post {
 //    private image3;
 //    private image4;
 //    private image5;
-
-
-
-
 
 
 }

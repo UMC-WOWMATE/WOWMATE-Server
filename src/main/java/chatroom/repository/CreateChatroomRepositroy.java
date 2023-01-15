@@ -1,6 +1,6 @@
-package Repository;
+package chatroom.repository;
 
-import domain.CreateChatroom;
+import chatroom.domain.CreateChatroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CreateChatroomRepositroy extends JpaRepository<CreateChatroom, Long> {
