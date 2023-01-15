@@ -1,18 +1,20 @@
-package domain;
+package chatroom.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import post.domain.Post;
+import user.domain.User;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
-public class PostCategory {
+public class CreateChatroom {
 
     @Id
     @GeneratedValue
-    @Column(name = "postcategory_id")
+    @Column(name = "createchatroom_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -20,7 +22,10 @@ public class PostCategory {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name =  "category_id")
-    private Category category;
+    @JoinColumn(name =  "reply_user_id")
+    private User user;
+
+    private Long writeUserId;
+
 
 }

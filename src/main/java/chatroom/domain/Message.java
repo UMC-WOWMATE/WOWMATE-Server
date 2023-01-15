@@ -1,5 +1,6 @@
-package domain;
+package chatroom.domain;
 
+import chatroom.domain.Chatroom;
 import lombok.Getter;
 import lombok.Setter;
 
