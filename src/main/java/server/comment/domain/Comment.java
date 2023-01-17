@@ -37,6 +37,6 @@ public class Comment extends BaseEntity {
     private String content;
 
     private int likeNumber;
-    private LocalDateTime registerTime;
+
 
 }
