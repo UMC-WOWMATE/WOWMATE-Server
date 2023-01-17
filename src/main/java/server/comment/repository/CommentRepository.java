@@ -13,6 +13,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                     "FROM comment " +
                     "WHERE post_id = :postId",
             nativeQuery = true)
-    List<Comment> findByPostId(@Param("articleId") Long postId);
+    List<Comment> findByPostId(@Param("postId") Long postId);
 
 }
