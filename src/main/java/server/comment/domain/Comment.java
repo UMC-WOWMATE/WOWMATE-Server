@@ -8,6 +8,7 @@ import server.post.domain.Post;
 import server.user.domain.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,5 +37,6 @@ public class Comment extends BaseEntity {
     private String content;
 
     private int likeNumber;
+    private LocalDateTime registerTime;
 
 }
