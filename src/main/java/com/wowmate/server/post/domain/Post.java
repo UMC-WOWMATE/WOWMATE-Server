@@ -26,6 +26,9 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     private String title;
     private String context;
@@ -37,6 +40,7 @@ public class Post extends BaseEntity {
     private String tag3;
     private String tag4;
     private String tag5;
+
 
 //    private image1;
 //    private image2;
