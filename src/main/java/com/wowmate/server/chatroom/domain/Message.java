@@ -24,4 +24,7 @@ public class Message extends BaseEntity {
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private MessageType messageType;
+
 }
