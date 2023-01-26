@@ -22,6 +22,7 @@ public class ChatroomController {
     @Operation(tags = "Chatroom", description = "채팅방 목록 조회")
     @GetMapping
     public List<GetChatroomListDto> getChatroomList(User user) {
+
         // @AuthenticationPrincipal 현재 접속한 유저 확인
         return chatroomService.getChatroomList(user);
 
@@ -45,11 +46,12 @@ public class ChatroomController {
 
     // 채팅방을 만들면 chats/{chatId}로 가야하나?
     // 그리고 메세지를 보내야만 채팅방이 만들어지는 것? 흠.. 헷갈리네 get인가?
-    @Operation(tags = "Chatroom", description = "채팅방 생성")
-    @PostMapping(value = "posts/{postId}/chat/create")
-    public GetChatroomDto createChatroom(@PathVariable Long postId, User user) {
+//    @Operation(tags = "Chatroom", description = "채팅방 생성")
+//    @PostMapping(value = "posts/{postId}/chat/create")
+//    public GetChatroomDto createChatroom(@PathVariable Long postId, User user) {
+//
+//        return chatroomService.createChatroom(postId, user);
+//
+//    }
 
-        return chatroomService.createChatroom(postId, user);
-
-    }
 }

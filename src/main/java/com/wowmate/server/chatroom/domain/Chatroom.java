@@ -19,6 +19,9 @@ public class Chatroom extends BaseEntity {
     @Column(name = "chatroom_id")
     private Long id;
 
+    @Column(name = "chatroom_uuid")
+    private String uuid;
+
     @ManyToOne(fetch  = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "create_chatroom_id")
     private CreateChatroom createChatroom;

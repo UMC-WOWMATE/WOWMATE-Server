@@ -1,14 +1,14 @@
 package com.wowmate.server.chatroom.domain;
 
 import com.wowmate.server.BaseEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message extends BaseEntity {
 
     @Id

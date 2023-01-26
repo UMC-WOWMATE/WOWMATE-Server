@@ -1,5 +1,5 @@
 package com.wowmate.server.chatroom.domain;
 
 public enum MessageType {
-    ENTER, TEXT
+    ENTER, SEND, MATCH
 }

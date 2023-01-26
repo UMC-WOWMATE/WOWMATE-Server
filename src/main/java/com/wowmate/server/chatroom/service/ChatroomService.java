@@ -94,8 +94,6 @@ public class ChatroomService {
 
     // 채팅방 만들기
     public GetChatroomDto createChatroom(Long postId, User user) {
-
-
         Post post = postRepository.findById(postId).get();
 
         CreateChatroom createChatroom = new CreateChatroom(post, user);
