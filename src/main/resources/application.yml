@@ -1,20 +1,18 @@
 jwt:
   secret: ${JWT_SECRET}
 spring:
-<<<<<<< HEAD
+
 
   jackson:
     # Date format string or a fully-qualified date format class name. For instance, 'yyyy-MM-dd HH:mm:ss'
     date-format: "yyyy-MM-dd HH:mm:ss.SSS"
 
-=======
->>>>>>> 0a3c204a377f48adae5ca8e9e488d84269148086
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${URL}
     username: ${USERNAME}
     password: ${USERPASSWORD}
-<<<<<<< HEAD
+
 
   jpa:
     defer-datasource-initialization: true

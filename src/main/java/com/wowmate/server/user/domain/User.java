@@ -51,6 +51,13 @@ public class User extends BaseEntity implements UserDetails{
     private Gender gender;
     //private String gender;
 
+    //    이미지 논의 필요
+    //    @Lob
+    //    private String image; --> ??
+    private String image;
+
+    private int age;
+
     //관리자 페이지를 별도로 형성할 경우 사용
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
