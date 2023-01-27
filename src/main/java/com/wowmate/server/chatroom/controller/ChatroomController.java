@@ -44,8 +44,9 @@ public class ChatroomController {
         // 리다이렉트 시켜줘야하나?
     }
 
-    // 채팅방을 만들면 chats/{chatId}로 가야하나?
-    // 그리고 메세지를 보내야만 채팅방이 만들어지는 것? 흠.. 헷갈리네 get인가?
+
+
+    // 채팅을 보내야만 채팅방이 만들어지게 구현??
 //    @Operation(tags = "Chatroom", description = "채팅방 생성")
 //    @PostMapping(value = "posts/{postId}/chat/create")
 //    public GetChatroomDto createChatroom(@PathVariable Long postId, User user) {
@@ -53,5 +54,7 @@ public class ChatroomController {
 //        return chatroomService.createChatroom(postId, user);
 //
 //    }
+
+
 
 }

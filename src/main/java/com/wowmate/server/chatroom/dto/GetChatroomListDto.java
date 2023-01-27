@@ -2,10 +2,7 @@ package com.wowmate.server.chatroom.dto;
 
 import com.wowmate.server.chatroom.domain.Chatroom;
 import com.wowmate.server.user.domain.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Getter
 public class GetChatroomListDto {
 
     private String postTitle;

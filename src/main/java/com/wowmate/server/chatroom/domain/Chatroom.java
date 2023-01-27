@@ -37,6 +37,7 @@ public class Chatroom extends BaseEntity {
         chatroom.setCreateChatroom(createChatroom);
         chatroom.setUserId(createChatroom.getUser().getId());
         chatroom.setOpponentUserId(createChatroom.getPostUserId());
+        chatroom.setUuid(createChatroom.getUuid());
 
         return chatroom;
     }
@@ -46,6 +47,7 @@ public class Chatroom extends BaseEntity {
         chatroom.setCreateChatroom(createChatroom);
         chatroom.setUserId(createChatroom.getPostUserId());
         chatroom.setOpponentUserId(createChatroom.getUser().getId());
+        chatroom.setUuid(createChatroom.getUuid());
 
         return chatroom;
     }

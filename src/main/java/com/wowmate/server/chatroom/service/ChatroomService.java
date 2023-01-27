@@ -12,12 +12,17 @@ import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChatroomService {
 
     private final ChatroomRepository chatroomRepository;
@@ -46,6 +51,7 @@ public class ChatroomService {
                                         // .lastMessageDate(chatroom.getMessages().get(chatroom.getMessages().size() - 1).getCreatedDate())
                                         .build()
                 )
+                .sorted(Comparator.comparing(GetChatroomListDto::getLastMessageDate).reversed())
                 .collect(Collectors.toList());
 
         return chatroomListDtos;
@@ -92,7 +98,7 @@ public class ChatroomService {
     }
 
 
-    // 채팅방 만들기
+    // 채팅방 생성
     public GetChatroomDto createChatroom(Long postId, User user) {
         Post post = postRepository.findById(postId).get();
 
