@@ -20,7 +20,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("server"))
+                .apis(RequestHandlerSelectors.basePackage("com.wowmate.server"))
                 .paths(PathSelectors.any())
                 .build();
     }
