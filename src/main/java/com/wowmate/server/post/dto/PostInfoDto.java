@@ -14,7 +14,7 @@ public class PostInfoDto {
     private String postTag4;
     private String postTag5;
     private int postLikeNumber;
-    private Long schoolId; //user와 school 매핑안되어있음..???탁균이형한테 물어보기
+    private String schoolName; //user와 school 매핑안되어있음..???탁균이형한테 물어보기
 
     private String createdBy;
 
