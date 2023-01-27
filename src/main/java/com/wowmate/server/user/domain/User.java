@@ -31,7 +31,7 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // Json 결과로 출력하지 않을 데이터에 대해 해당 어노테이션 설정 값 추가

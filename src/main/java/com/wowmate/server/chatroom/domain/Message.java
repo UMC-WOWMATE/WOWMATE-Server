@@ -1,14 +1,14 @@
 package com.wowmate.server.chatroom.domain;
 
 import com.wowmate.server.BaseEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message extends BaseEntity {
 
     @Id
@@ -18,9 +18,13 @@ public class Message extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id")
-    private Chatroom chatRoom;
+    private Chatroom chatroom;
 
     private Long sendUserId;
+
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    private MessageType messageType;
 
 }

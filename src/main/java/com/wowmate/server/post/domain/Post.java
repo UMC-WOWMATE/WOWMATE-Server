@@ -3,7 +3,9 @@ package com.wowmate.server.post.domain;
 import com.wowmate.server.BaseEntity;
 import com.wowmate.server.comment.domain.Comment;
 import com.wowmate.server.user.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,6 +15,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Post extends BaseEntity {
 
     @Id
@@ -27,6 +31,10 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     private String title;
     private String context;
     private int likeNumber;
@@ -38,11 +46,16 @@ public class Post extends BaseEntity {
     private String tag4;
     private String tag5;
 
-//    private image1;
-//    private image2;
-//    private image3;
-//    private image4;
-//    private image5;
+    public Post(Category category, String title, String context, int likeNumber) {
+        this.category = category;
+        this.title = title;
+        this.context = context;
+        this.likeNumber = likeNumber;
+    }
 
-
+    public Post(String title, String context, int likeNumber) {
+        this.title = title;
+        this.context = context;
+        this.likeNumber = likeNumber;
+    }
 }
