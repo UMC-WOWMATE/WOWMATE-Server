@@ -19,8 +19,9 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Long school_id;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "school_id")
+    private School school;
 
     @Column(nullable = false)
     private String email;
@@ -29,15 +30,14 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private Long phoneNumber;
 
     private int age;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    private String image;
 
 //    이미지 논의 필요
 //    @Lob
