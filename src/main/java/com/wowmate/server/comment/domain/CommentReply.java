@@ -29,6 +29,6 @@ public class CommentReply extends BaseEntity {
 
     private String content;
 
-    private int likeNumber;
+    private int commentReplyLikeNumber;
 
 }
