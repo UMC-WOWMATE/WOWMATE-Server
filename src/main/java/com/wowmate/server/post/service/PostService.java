@@ -56,7 +56,7 @@ public class PostService {
                             p.getTag4(),
                             p.getTag5(),
                             p.getLikeNumber(),
-                            p.getUser().getSchool().getName(),
+                            p.getUser().getUniv(),
                             p.getCreatedBy()
                     )
             );
@@ -81,7 +81,7 @@ public class PostService {
                     p.getTag4(),
                     p.getTag5(),
                     p.getLikeNumber(),
-                    p.getUser().getSchool().getName(),
+                    p.getUser().getUniv(),
                     p.getCreatedBy())
             );
         }

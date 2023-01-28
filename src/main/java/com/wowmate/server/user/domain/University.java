@@ -1,6 +1,5 @@
 package com.wowmate.server.user.domain;
 
-import com.wowmate.server.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,11 +10,10 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class School extends BaseEntity {
+public class University {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "school_id")
+    @Column(name = "univ_id")
     private Long id;
 
     private String name;

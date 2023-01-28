@@ -45,7 +45,7 @@ public class MessageService {
         List<MatchMessageDto> matchMessageDtos = new ArrayList<>();
 
         MatchMessageDto matchMessageDto1 = MatchMessageDto.builder()
-                .School(user.getSchool().getName())
+                .School(user.getUniv())
                 .age(user.getAge())
                 .phoneNumber(user.getPhoneNumber())
                 .gender(user.getGender().toString())
@@ -56,7 +56,7 @@ public class MessageService {
         User opponentUser = userRepository.findById(opponentUserId).orElseThrow(EntityNotFoundException::new);
 
         MatchMessageDto matchMessageDto2 = MatchMessageDto.builder()
-                .School(opponentUser.getSchool().getName())
+                .School(opponentUser.getUniv())
                 .age(opponentUser.getAge())
                 .phoneNumber(opponentUser.getPhoneNumber())
                 .gender(opponentUser.getGender().toString())
