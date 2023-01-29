@@ -22,7 +22,7 @@ public class SignUpRequestDto {
 
     private String univ;
 
-    private Long phoneNumber;
+    private String phoneNumber;
 
     /*서버에서 클라이언트측으로 LocalDateTime 을 넘겨줄 떄 이를 String 타입으로 변환해줌 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")

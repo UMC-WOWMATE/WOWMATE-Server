@@ -9,7 +9,7 @@ public class MatchMessageDto {
 
     private String gender;
     private String School;
-    private Long phoneNumber;
+    private String phoneNumber;
     private int age;
 
 }
