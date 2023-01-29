@@ -9,14 +9,17 @@ public class test {
 
     @Test
     void contextTest(){
-        Gender a = M;
 
-        int b = 10;
+        String phoneNumber = "01034333292";
 
-        System.out.println(a);
+        phoneNumber = phone_format(phoneNumber);
+        System.out.println(phoneNumber);
     }
 
-
+    public String phone_format(String number) {
+        String regEx = "(\\d{3})(\\d{4})(\\d{4})";
+        return number.replaceAll(regEx, "$1-$2-$3");
+    }
 
 
 }

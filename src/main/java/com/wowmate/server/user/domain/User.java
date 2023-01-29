@@ -42,7 +42,7 @@ public class User extends BaseEntity implements UserDetails{
     private String univ;
 
     @Column(nullable = false)
-    private Long phoneNumber;
+    private String phoneNumber;
 
     @Column(nullable = false)
     private LocalDate birth;

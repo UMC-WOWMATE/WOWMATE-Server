@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
             user = User.builder()
                     .email(signUpRequestDto.getEmail())
                     .univ(signUpRequestDto.getUniv())
-                    .phoneNumber(signUpRequestDto.getPhoneNumber())
+                    .phoneNumber(phone_format(signUpRequestDto.getPhoneNumber()))
                     .birth(signUpRequestDto.getBirth())
                     .gender(signUpRequestDto.getGender())
                     .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
             user = User.builder()
                     .email(signUpRequestDto.getEmail())
                     .univ(signUpRequestDto.getUniv())
-                    .phoneNumber(signUpRequestDto.getPhoneNumber())
+                    .phoneNumber(phone_format(signUpRequestDto.getPhoneNumber()))
                     .birth(signUpRequestDto.getBirth())
                     .gender(signUpRequestDto.getGender())
                     .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
@@ -113,5 +113,10 @@ public class UserServiceImpl implements UserService {
         result.setSuccess(false);
         result.setCode(CommonResponse.FAIL.getCode());
         result.setMsg(CommonResponse.FAIL.getMsg());
+    }
+
+    private String phone_format(String number) {
+        String regEx = "(\\d{3})(\\d{4})(\\d{4})";
+        return number.replaceAll(regEx, "$1-$2-$3");
     }
 }

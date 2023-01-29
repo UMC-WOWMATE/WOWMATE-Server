@@ -17,7 +17,8 @@ spring:
   jpa:
     defer-datasource-initialization: true
     hibernate:
-        ddl-auto: update
+        #ddl-auro: update
+        ddl-auto: create
         #hbm2ddl:
          # import_files: classpath:db/data.sql # DB ?? ????? ??
           #import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
