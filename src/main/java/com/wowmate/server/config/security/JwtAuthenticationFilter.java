@@ -1,5 +1,6 @@
 package com.wowmate.server.config.security;
 
+import com.wowmate.server.config.common.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -28,10 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse servletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-//        if (!hasAuthorizationBearer(servletRequest)) {
-//            filter.doFilter(servletRequest, servletResponse);
-//            return;
-//        }
+        if (!hasAuthorizationBearer(servletRequest)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
 
         String token = jwtTokenProvider.resolveToken(servletRequest);
         log.info("[doFilterInternal] token 값 추출 완료: token : {}", token);
@@ -46,12 +47,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-//    private boolean hasAuthorizationBearer(HttpServletRequest request) {
-//        log.info("[hasAuthorizationBearer] Authorization: Bearer {AccessToken} 형태인지 검증");
-//        String header = request.getHeader("Authorization");
-//        if (StringUtil.isNullOrEmpty(header) || !header.startsWith("Bearer")) {
-//            return false;
-//        }
-//        return true;
-//    }
+    private boolean hasAuthorizationBearer(HttpServletRequest request) {
+        log.info("[hasAuthorizationBearer] Authorization: Bearer {AccessToken} 형태인지 검증");
+        String header = request.getHeader("Authorization");
+        if (StringUtil.isNullOrEmpty(header) || !header.startsWith("Bearer")) {
+            return false;
+        }
+        return true;
+    }
 }

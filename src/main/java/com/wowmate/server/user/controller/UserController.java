@@ -1,6 +1,10 @@
 package com.wowmate.server.user.controller;
 
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.Response;
+import com.wowmate.server.user.domain.University;
 import com.wowmate.server.user.dto.*;
+import com.wowmate.server.user.repository.UniversityRepository;
 import com.wowmate.server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,6 +27,7 @@ public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final UniversityRepository universityRepository;
 
     @PostMapping(value = "/sign-in")
     public SignInResultDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException {
@@ -45,6 +53,14 @@ public class UserController {
 
         log.info("[signUp] 회원가입을 완료했습니다. Email : {}", signUpRequestDto.getEmail());
         return signUpResultDto;
+    }
+
+    @GetMapping(value = "/univ")
+    public List<University> getUnivList() {
+            log.info("true");
+            List<University> UnivList = universityRepository.findAll();
+            return UnivList;
+
     }
 
     @GetMapping(value = "/exception")
