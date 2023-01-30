@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CommentReplyDto {
-    private String commentContext;
+public class CommentReplyInfoResDto {
+    private String commentReplyContext;
     private int likeNumber;
     private String createdTime;
 }

@@ -6,9 +6,9 @@ import java.util.List;
 
 @AllArgsConstructor
 @Getter
-public class CommentDto {
-    private String commentContent;
+public class CommentInfoResDto {
+    private String commentContext;
     private int likeNumber;
     private String createdDate;
-    List<CommentReplyDto> commentReplyDtoList;
+    List<CommentReplyInfoResDto> commentReplyDtoList;
 }

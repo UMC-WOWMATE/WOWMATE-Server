@@ -29,7 +29,10 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests() // 리퀘스트에 대한 사용권한 체크
                 .antMatchers("/sign-api/sign-in", "/sign-api/sign-up", "/sign-api/exception",
-                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/sign-api/test")
+                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/sign-api/test",
+
+
+                        "/posts","/posts/search","/posts/info", "/posts/category", "/posts/comments","/posts/commentReplies")
                 .permitAll() // 가입 및 로그인 주소는 허용
                 .antMatchers(HttpMethod.GET, "/product/**")
                 .permitAll() // product로 시작하는 Get 요청은 허용
