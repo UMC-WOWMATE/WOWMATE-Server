@@ -101,7 +101,7 @@ public class JwtTokenProvider {
      */
     public String resolveToken(HttpServletRequest request){
         log.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-        return request.getHeader("token");
+        return request.getHeader("X-AUTH-TOKEN");
     }
 
 //    public String resolveToken(HttpServletRequest request) {

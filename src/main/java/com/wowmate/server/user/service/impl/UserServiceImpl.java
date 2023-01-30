@@ -52,6 +52,15 @@ public class UserServiceImpl implements UserService {
                     .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
                     .roles(Collections.singletonList("ROLE_ADMIN"))
                     .build();
+            /**
+             * Spring Security에서 Role의 경우에는 prefix로 "ROLE_" 이라는 문자를 붙인다.
+             * 따라서 다음의 둘 중 하나를 선택해서 적용해야 한다.
+             *
+             * 1. DB상 role 정보에 prefix로 "ROLE_"을 붙여준다.
+             * 2. hasRole 대신 hasAuthority를 사용한다.
+             *
+             * hasRole 안에 "ROLE_" prefix를 직접 넣어주면 spring security가 넣어줘서 판단하니 직접 넣지 말라는 컴파일 에러도 발생한다.
+             */
         } else {
             user = User.builder()
                     .email(signUpRequestDto.getEmail())
