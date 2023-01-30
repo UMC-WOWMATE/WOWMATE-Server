@@ -38,14 +38,14 @@ public class CreateChatroom extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "createChatroom")
     private List<Chatroom> chatrooms = new ArrayList<>();
 
-    private Long postUserId;
+    private String postUserEmail;
 
     //== 연관 관계 메서드==//
     public CreateChatroom(Post post, User user) {
         this.uuid = UUID.randomUUID().toString();
         this.post = post;
         this.user = user;
-        this.postUserId = post.getUser().getId();
+        this.postUserEmail = post.getUser().getEmail();
     }
 
 }

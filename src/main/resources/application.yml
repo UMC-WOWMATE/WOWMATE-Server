@@ -17,13 +17,13 @@ spring:
   jpa:
     defer-datasource-initialization: true
     hibernate:
-        #ddl-auro: update
-        ddl-auto: create
+      #ddl-auto: update
+      ddl-auto: create
         #hbm2ddl:
-         # import_files: classpath:db/data.sql # DB ?? ????? ??
-          #import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
-        connection:
-          charSet: UTF-8 # ??? ??
+        # import_files: classpath:db/data.sql # DB ?? ????? ??
+      #import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
+      connection:
+        charSet: UTF-8 # ??? ??
 
     show-sql: true
     properties:
@@ -33,5 +33,3 @@ spring:
     init:
       mode: always
       data-locations: classpath:/db/data.sql
-
-

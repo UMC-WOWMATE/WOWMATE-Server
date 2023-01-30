@@ -17,6 +17,6 @@ public class GetChatroomListDto {
 
     private String lastMessage;
 
-    private LocalDateTime lastMessageDate;
+    private String lastMessageDate;
 
 }
