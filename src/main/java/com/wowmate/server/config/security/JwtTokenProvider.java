@@ -99,17 +99,17 @@ public class JwtTokenProvider {
      * @param request Http Request Header
      * @return String type Token 값
      */
-    public String resolveToken(HttpServletRequest request){
-        log.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-        return request.getHeader("X-AUTH-TOKEN");
-    }
-
-//    public String resolveToken(HttpServletRequest request) {
+//    public String resolveToken(HttpServletRequest request){
 //        log.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-//        String header = request.getHeader("Authorization");
-//        String token = header.split(" ")[1].trim();
-//        return token;
+//        return request.getHeader("Authorization"); // Bearer accessToken
 //    }
+
+    public String resolveToken(HttpServletRequest request) {
+        log.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
+        String header = request.getHeader("Authorization");
+        String token = header.split(" ")[1].trim();
+        return token;
+    }
 
     // JWT 토큰의 유효성 + 만료일 체크
     public boolean validateToken(String token) {
@@ -122,6 +122,7 @@ public class JwtTokenProvider {
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             log.info("[validateToken] 토큰 유효 체크 예외 발생");
             return false;
         }
