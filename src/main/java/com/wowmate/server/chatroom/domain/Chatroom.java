@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,7 @@ public class Chatroom extends BaseEntity {
     @Column(name = "chatroom_id")
     private Long id;
 
-    @Column(name = "chatroom_uuid")
+    @Column(name = "chatroom_uuid", unique = true)
     private String uuid;
 
     @ManyToOne(fetch  = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -27,7 +28,7 @@ public class Chatroom extends BaseEntity {
     private CreateChatroom createChatroom;
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 
     private String userEmail;
     private String opponentUserEmail;

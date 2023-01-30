@@ -6,9 +6,12 @@ import com.wowmate.server.chatroom.dto.MatchMessageDto;
 import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.MessageRepository;
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,26 +24,39 @@ import java.util.List;
 @Transactional
 public class MessageService {
 
+    private final SimpMessagingTemplate template;
     private final MessageRepository messageRepository;
     private final ChatroomRepository chatroomRepository;
 
     private final UserRepository userRepository;
 
-    public void createMessage(User user, MessageDto messageDto) {
-        Chatroom chatroom = chatroomRepository.findByUuid(messageDto.getChatroomUuid()).orElseThrow(EntityNotFoundException::new);
+    public void sendMessage(MessageDto messageDto) throws BaseException {
+
+        User user = userRepository.findByEmail(messageDto.getSenderEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
+
+        Chatroom chatroom = chatroomRepository.findByUuid(messageDto.getChatroomUuid())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
         Message message = Message.builder()
                 .messageType(messageDto.getMessageType())
-                .sendUserId(user.getId())
+                .senderEmail(user.getEmail())
                 .content(messageDto.getContent())
                 .chatroom(chatroom)
                 .build();
 
         messageRepository.save(message);
         chatroom.getMessages().add(message);
+
+        template.convertAndSend("/sub/chats/" + messageDto.getChatroomUuid(), messageDto);
+
     }
 
-    public List<MatchMessageDto> matchRespond(User user, String roomUuid) {
+    public List<MatchMessageDto> matchRespond(User user, String roomUuid) throws BaseException {
+
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
 
         List<MatchMessageDto> matchMessageDtos = new ArrayList<>();
 
@@ -66,5 +82,7 @@ public class MessageService {
         return matchMessageDtos;
 
     }
+
+
 
 }

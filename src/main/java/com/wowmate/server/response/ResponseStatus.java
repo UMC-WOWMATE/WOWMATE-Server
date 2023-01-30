@@ -28,18 +28,16 @@ public enum ResponseStatus {
     NO_MODIFIED_CONTEXT(false,361,"수정된 부분이 없습니다."),
 
     //380~공용
-    NOT_EXIST_POST(false, 380, "존재하지 않는 게시글입니다.");
-
-
-
-
+    NOT_EXIST_POST(false, 380, "존재하지 않는 게시글입니다."),
 
 
     //400 ~ USER ERROR
     //로그인 예외 처리 만들 때, 여기 만들면 됨!
+    NOT_FOUND_USER(false, 401, "찾을 수 없는 유저입니다."),
 
 
-
+    // 채팅 예외
+    NO_CHATROOM(false, 401, "채팅방이 존재하지 않습니다.");
 
     private final boolean isSuccess;
     private final int code;

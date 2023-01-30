@@ -3,13 +3,14 @@ package com.wowmate.server.chatroom.controller;
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
 import com.wowmate.server.chatroom.service.ChatroomService;
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.Response;
 import com.wowmate.server.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,30 +27,55 @@ public class ChatroomController {
 
     @Operation(tags = "Chatroom", description = "채팅방 목록 조회")
     @GetMapping
-    public List<GetChatroomListDto> getChatroomList(@AuthenticationPrincipal User user) {
+    public Response<List<GetChatroomListDto>, Object> getChatroomList(@AuthenticationPrincipal User user) {
 
-        log.info("user: {}", user.getUsername());
-        // @AuthenticationPrincipal 현재 접속한 유저 확인
-        return chatroomService.getChatroomList(user);
+        try {
+
+            List<GetChatroomListDto> chatroomListDto = chatroomService.getChatroomList(user);
+
+            return new Response<>(chatroomListDto);
+
+        } catch(BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
+        }
 
     }
 
     @Operation(tags = "Chatroom", description = "특정 채팅방 조회")
-    @GetMapping(value = "/chats/{chatId}")
-    public GetChatroomDto getChatroom(@PathVariable("chatId") Long chatroomId, @AuthenticationPrincipal User user) {
+    @GetMapping(value = "/chats/{roomUuid}")
+    public Response<GetChatroomDto, Object> getChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
-        return chatroomService.getChatroom(chatroomId, user);
+        try {
+
+            GetChatroomDto chatroomDto = chatroomService.getChatroom(roomUuid, user);
+            return new Response<>(chatroomDto);
+
+        } catch(BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
+        }
 
     }
 
     @Operation(tags = "Chatroom", description = "채팅방 삭제")
-    @DeleteMapping(value = "/chats/{chatId}")
-    public void deleteChatroom(@PathVariable("chatId") Long chatroomId, User user) {
+    @DeleteMapping(value = "/chats/{roomUuid}")
+    public Response<List<GetChatroomListDto>, Object> deleteChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
-        chatroomService.deleteChatroom(chatroomId, user);
-        // 리다이렉트 시켜줘야하나?
+        try {
+
+            List<GetChatroomListDto> chatroomListDto = chatroomService.deleteChatroom(roomUuid, user);
+            return new Response<>(chatroomListDto);
+
+        } catch(BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
+        }
+
     }
-
 
 
     // 채팅을 보내야만 채팅방이 만들어지게 구현??

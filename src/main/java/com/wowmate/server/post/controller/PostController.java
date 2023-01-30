@@ -59,6 +59,7 @@ public class PostController {
 
     @GetMapping("/posts/{postId}")
     public Response<PostClickDto,List<CommentDto>> getPostClick(@PathVariable Long postId) {
+
         PostClickDto postClickDto;
         List<CommentDto> commentDtoList;
         try {
@@ -69,6 +70,7 @@ public class PostController {
         catch(BaseException e){
             return new Response<>(e.getResponseStatus());
         }
+
     }
 
 }

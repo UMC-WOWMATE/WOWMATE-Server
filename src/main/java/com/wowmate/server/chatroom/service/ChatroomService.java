@@ -8,13 +8,15 @@ import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.CreateChatroomRepository;
 import com.wowmate.server.post.domain.Post;
 import com.wowmate.server.post.repository.PostRepository;
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
@@ -35,10 +37,11 @@ public class ChatroomService {
 
 
     // 채팅방 목록 조회
-    public List<GetChatroomListDto> getChatroomList(UserDetails user) {
+    @Transactional(readOnly = true)
+    public List<GetChatroomListDto> getChatroomList(User user) throws BaseException {
 
         if (user == null) {
-            throw new IllegalStateException("존재하지 않는 회원입니다.");
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
         List<GetChatroomListDto> chatroomListDtos = chatroomRepository
@@ -61,15 +64,17 @@ public class ChatroomService {
     }
 
 
+    @Transactional(readOnly = true)
     // 특정 채팅방 조회
-    public GetChatroomDto getChatroom(Long chatroomId, User user) {
+    public GetChatroomDto getChatroom(String roomUuid, User user) throws BaseException {
 
         if (user == null) {
-            throw new IllegalStateException("존재하지 않는 회원입니다.");
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
         Chatroom chatroom = chatroomRepository
-                .findByChatroomIdAndUserEmail(chatroomId,user.getEmail());
+                .findByChatroomUuidAndUserEmail(roomUuid,user.getEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
         GetChatroomDto chatroomDto = GetChatroomDto
                 .builder()
@@ -82,27 +87,38 @@ public class ChatroomService {
 
         return chatroomDto;
 
-
     }
 
 
     // 채팅방 삭제
-    public void deleteChatroom(Long chatroomId, User user) {
+    public List<GetChatroomListDto> deleteChatroom(String roomUuid, User user) throws BaseException {
+
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
 
         // createChatroom에서 삭제해야하나?...흠
-        try {
-            Chatroom chatroom = chatroomRepository.findById(chatroomId).get();
-            chatroomRepository.delete(chatroom);
-        } catch (Exception e) {
-            throw new IllegalStateException("존재하지 않는 채팅방입니다.");
-        }
+
+        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
+                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
+
+        chatroomRepository.delete(chatroom);
+
+        List<GetChatroomListDto> chatroomListDtos = getChatroomList(user);
+        return chatroomListDtos;
 
     }
 
 
     // 채팅방 생성
-    public GetChatroomDto createChatroom(Long postId, User user) {
-        Post post = postRepository.findById(postId).get();
+    public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
+
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
         CreateChatroom createChatroom = new CreateChatroom(post, user);
         createChatroomRepository.save(createChatroom);
@@ -113,9 +129,13 @@ public class ChatroomService {
         chatroomRepository.save(chatroomForUser);
         chatroomRepository.save(chatroomForPostUser);
 
-        GetChatroomDto getChatroomDto = this.getChatroom(chatroomForUser.getId(), user);
+        GetChatroomDto getChatroomDto = this.getChatroom(chatroomForUser.getUuid(), user);
 
         return getChatroomDto;
+
     }
+
+    // post에 같은 유저가 채팅 중복 생성 금지
+    // 자기가 쓴 글에 채팅 안 만들어져야함
 
 }

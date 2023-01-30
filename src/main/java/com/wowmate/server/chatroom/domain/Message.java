@@ -21,7 +21,7 @@ public class Message extends BaseEntity {
     @JoinColumn(name = "chatroom_id")
     private Chatroom chatroom;
 
-    private Long sendUserId;
+    private String senderEmail;
 
     private String content;
 

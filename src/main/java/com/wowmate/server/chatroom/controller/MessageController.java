@@ -5,16 +5,22 @@ import com.wowmate.server.chatroom.dto.MatchMessageDto;
 import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.service.ChatroomService;
 import com.wowmate.server.chatroom.service.MessageService;
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.Response;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,22 +29,33 @@ import java.util.List;
 @Tag(name = "Message", description = "메세지 API")
 public class MessageController {
 
-    private final SimpMessagingTemplate template;
     private final ChatroomService chatroomService;
 
     private final MessageService messageService;
 
     @Operation(tags = "Message", description = "메세지 전송")
     @MessageMapping(value = "/chat/message")
-    public void sendMessage(User user, @RequestBody MessageDto messageDto) {
+    public Response<Object, Object> sendMessage(@RequestBody MessageDto messageDto) {
 
-        if (messageDto.getMessageType().equals(MessageType.ENTER)) {
-            chatroomService.createChatroom(messageDto.getPostId(), user);
+        try {
+
+            if (messageDto.getMessageType().equals(MessageType.ENTER)) {
+
+                chatroomService.createChatroom(messageDto.getPostId());
+                log.info("채팅방 생성: {}", messageDto.getChatroomUuid());
+            }
+
+            messageService.sendMessage(messageDto);
+
+
+
+            return new Response<>(ResponseStatus.SUCCESS);
+
+        } catch (BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
         }
-
-        messageService.createMessage(user, messageDto);
-
-        template.convertAndSend("/sub/chats/" + messageDto.getChatroomUuid(), messageDto);
 
     }
 
@@ -51,12 +68,22 @@ public class MessageController {
 
     @Operation(tags = "Message", description = "매칭 성사")
     @MessageMapping(value = "/chat/match/")
-    public void matchRespond(User user, @RequestBody String roomUuid) {
+    public Response<Object, Object> matchRespond(@AuthenticationPrincipal User user, @RequestBody String roomUuid) {
 
-        List<MatchMessageDto> matchMessageDtos = messageService.matchRespond(user, roomUuid);
+        try {
 
-        template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDtos.get(0));
-        template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDtos.get(1));
+            List<MatchMessageDto> matchMessageDtos = messageService.matchRespond(user, roomUuid);
+
+            template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDtos.get(0));
+            template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDtos.get(1));
+
+            return new Response<>(ResponseStatus.SUCCESS);
+
+        } catch (BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
+        }
 
     }
 
