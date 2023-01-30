@@ -29,14 +29,14 @@ public class Chatroom extends BaseEntity {
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    private Long userId;
-    private Long opponentUserId;
+    private String userEmail;
+    private String opponentUserEmail;
 
     public static Chatroom createChatroomForUser(CreateChatroom createChatroom) {
         Chatroom chatroom = new Chatroom();
         chatroom.setCreateChatroom(createChatroom);
-        chatroom.setUserId(createChatroom.getUser().getId());
-        chatroom.setOpponentUserId(createChatroom.getPostUserId());
+        chatroom.setUserEmail(createChatroom.getUser().getEmail());
+        chatroom.setOpponentUserEmail(createChatroom.getPostUserEmail());
         chatroom.setUuid(createChatroom.getUuid());
 
         return chatroom;
@@ -45,8 +45,8 @@ public class Chatroom extends BaseEntity {
     public static Chatroom createChatroomForPostUser(CreateChatroom createChatroom) {
         Chatroom chatroom = new Chatroom();
         chatroom.setCreateChatroom(createChatroom);
-        chatroom.setUserId(createChatroom.getPostUserId());
-        chatroom.setOpponentUserId(createChatroom.getUser().getId());
+        chatroom.setUserEmail(createChatroom.getPostUserEmail());
+        chatroom.setOpponentUserEmail(createChatroom.getUser().getEmail());
         chatroom.setUuid(createChatroom.getUuid());
 
         return chatroom;

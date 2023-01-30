@@ -52,8 +52,8 @@ public class MessageService {
                 .build();
         matchMessageDtos.add(matchMessageDto1);
 
-        Long opponentUserId = chatroomRepository.findByChatroomUuidAndUserId(roomUuid, user.getId()).getOpponentUserId();
-        User opponentUser = userRepository.findById(opponentUserId).orElseThrow(EntityNotFoundException::new);
+        String opponentUserEmail = chatroomRepository.findByChatroomUuidAndUserEmail(roomUuid, user.getEmail()).getOpponentUserEmail();
+        User opponentUser = userRepository.findByEmail(opponentUserEmail);
 
         MatchMessageDto matchMessageDto2 = MatchMessageDto.builder()
                 .School(opponentUser.getUniv())

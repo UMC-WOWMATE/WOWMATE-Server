@@ -7,6 +7,9 @@ import com.wowmate.server.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
+@RequestMapping(value = "/chats")
 @Tag(name = "Chatroom", description = "채팅방 API")
 public class ChatroomController {
 
@@ -21,8 +26,9 @@ public class ChatroomController {
 
     @Operation(tags = "Chatroom", description = "채팅방 목록 조회")
     @GetMapping
-    public List<GetChatroomListDto> getChatroomList(User user) {
+    public List<GetChatroomListDto> getChatroomList(@AuthenticationPrincipal User user) {
 
+        log.info("user: {}", user.getUsername());
         // @AuthenticationPrincipal 현재 접속한 유저 확인
         return chatroomService.getChatroomList(user);
 
@@ -30,7 +36,7 @@ public class ChatroomController {
 
     @Operation(tags = "Chatroom", description = "특정 채팅방 조회")
     @GetMapping(value = "/chats/{chatId}")
-    public GetChatroomDto getChatroom(@PathVariable("chatId") Long chatroomId, User user) {
+    public GetChatroomDto getChatroom(@PathVariable("chatId") Long chatroomId, @AuthenticationPrincipal User user) {
 
         return chatroomService.getChatroom(chatroomId, user);
 
@@ -54,7 +60,5 @@ public class ChatroomController {
 //        return chatroomService.createChatroom(postId, user);
 //
 //    }
-
-
 
 }

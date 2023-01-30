@@ -11,11 +11,12 @@ import com.wowmate.server.post.repository.PostRepository;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,21 +35,22 @@ public class ChatroomService {
 
 
     // 채팅방 목록 조회
-    public List<GetChatroomListDto> getChatroomList(User user) {
+    public List<GetChatroomListDto> getChatroomList(UserDetails user) {
 
         if (user == null) {
             throw new IllegalStateException("존재하지 않는 회원입니다.");
         }
 
         List<GetChatroomListDto> chatroomListDtos = chatroomRepository
-                .findByUserId(user.getId())
+                .findByUserEmail(user.getUsername())
                 .stream()
                 .map(
                         chatroom ->
                                 GetChatroomListDto.builder()
                                         .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
-                                        // .lastMessage(chatroom.getMessages().get(chatroom.getMessages().size() - 1).getContent())
-                                        // .lastMessageDate(chatroom.getMessages().get(chatroom.getMessages().size() - 1).getCreatedDate())
+                                        .lastMessage(chatroom.getMessages().get(chatroom.getMessages().size() - 1).getContent())
+                                        .lastMessageDate(chatroom.getMessages().get(chatroom.getMessages().size() - 1)
+                                                .getCreatedDate().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
                                         .build()
                 )
                 .sorted(Comparator.comparing(GetChatroomListDto::getLastMessageDate).reversed())
@@ -67,14 +69,14 @@ public class ChatroomService {
         }
 
         Chatroom chatroom = chatroomRepository
-                .findByChatroomIdAndUserId(chatroomId,user.getId());
+                .findByChatroomIdAndUserEmail(chatroomId,user.getEmail());
 
         GetChatroomDto chatroomDto = GetChatroomDto
                 .builder()
                 .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
-                .createDate(chatroom.getCreatedDate())
+                .createDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
                 .messageList(chatroom.getMessages())
-                .opponentImg(userRepository.findById(chatroom.getOpponentUserId()).get().getImage())
+                .opponentImg(userRepository.findByEmail(chatroom.getOpponentUserEmail()).getImage())
                 .postCategory(chatroom.getCreateChatroom().getPost().getCategory().getName())
                 .build();
 

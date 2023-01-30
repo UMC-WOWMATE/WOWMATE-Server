@@ -18,7 +18,7 @@ public class GetChatroomDto {
     private String opponentImg;
     private String postTitle;
     private String postCategory;
-    private LocalDateTime createDate;
+    private String createDate;
     private List<Message> messageList;
 
 }
