@@ -1,5 +1,4 @@
 package com.wowmate.server.post.service;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.wowmate.server.comment.domain.Comment;
 import com.wowmate.server.comment.domain.CommentReply;
 import com.wowmate.server.comment.dto.*;
@@ -14,21 +13,20 @@ import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.wowmate.server.response.ResponseStatus.NO_RELATED_POST;
-import static com.wowmate.server.response.ResponseStatus.SUCCESS_NO_POST;
-import static com.wowmate.server.response.ResponseStatus.NO_COMMENT;
+import static com.wowmate.server.response.ResponseStatus.*;
 
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@CrossOrigin
 public class PostService {
 
     private final PostRepository postRepository;
@@ -127,7 +125,7 @@ public class PostService {
                             r.getCreatedBy()));
                 }
                 commentInfoResDtoList.add(new CommentInfoResDto(
-                                c.getContent(),
+                                c.getContext(),
                                 c.getCommentLikeNumber(),
                                 c.getCreatedBy(),
                                 commentReplyInfoResDtoList
@@ -150,18 +148,18 @@ public class PostService {
         if(postList.isEmpty())
             throw new BaseException(NO_RELATED_POST);
         for (Post p : postList) {
-                postInfoResDtoList.add(new PostInfoResDto(
-                        p.getTitle(),
-                        p.getCategoryName(),
-                        p.getTag1(),
-                        p.getTag2(),
-                        p.getTag3(),
-                        p.getTag4(),
-                        p.getTag5(),
-                        p.getLikeNumber(),
-                        p.getUser().getUniv(),
-                        p.getCreatedBy())
-                );
+            postInfoResDtoList.add(new PostInfoResDto(
+                    p.getTitle(),
+                    p.getCategoryName(),
+                    p.getTag1(),
+                    p.getTag2(),
+                    p.getTag3(),
+                    p.getTag4(),
+                    p.getTag5(),
+                    p.getLikeNumber(),
+                    p.getUser().getUniv(),
+                    p.getCreatedBy())
+            );
 
         }
         return postInfoResDtoList;
@@ -195,7 +193,7 @@ public class PostService {
 
         commentRepository.save(comment);
 
-        CommentRegisterResDto commentRegisterResDto=new CommentRegisterResDto(comment.getId());
+        CommentRegisterResDto commentRegisterResDto = new CommentRegisterResDto(comment.getId());
 
         return commentRegisterResDto;
     }
@@ -213,4 +211,27 @@ public class PostService {
         CommentReplyRegisterResDto commentReplyRegisterResDto = new CommentReplyRegisterResDto(commentReply.getId());
         return commentReplyRegisterResDto;
     }
+
+    public void deleteCommentReply(CommentReplyDeleteReqDto commentReplyDeleteReqDto) throws BaseException {
+        //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
+
+        commentReplyRepository.deleteById(commentReplyDeleteReqDto.getCommentReplyId());
+        throw new BaseException(SUCCESS);
+    }
+
+    public void deleteComment(CommentDeleteReqDto commentDeleteReqDto) throws BaseException {
+        //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
+
+        commentRepository.deleteById(commentDeleteReqDto.getCommentId());
+        throw new BaseException(SUCCESS);
+    }
+
+    public void deletePost(PostDeleteReqDto postDeleteReqDto) throws BaseException {
+        //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
+
+        postRepository.deleteById(postDeleteReqDto.getPostId());
+
+        throw new BaseException(SUCCESS);
+    }
+
 }

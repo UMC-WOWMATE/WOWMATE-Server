@@ -113,7 +113,7 @@ public class PostController {
 
     @PostMapping("/posts/commentReplies")
     public Response<CommentReplyRegisterResDto,Object> registerCommentReply(@RequestBody CommentReplyRegisterReqDto commentReplyRegisterReqDto) {
-        try{
+        try {
 
             CommentReplyRegisterResDto commentReplyRegisterResDto =postService.registerCommentReply(commentReplyRegisterReqDto);
             return new Response<>(commentReplyRegisterResDto);
@@ -121,7 +121,36 @@ public class PostController {
         catch (BaseException e){
             return new Response<>(e.getResponseStatus());
         }
+    }
 
+    @DeleteMapping("/posts/commentReplies/delete")
+    public Response<Object, Object> deleteCommentReply(@RequestBody CommentReplyDeleteReqDto commentReplyDeleteReqDto) {
+        try {
+            postService.deleteCommentReply(commentReplyDeleteReqDto);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
 
+    @DeleteMapping("/posts/comments/delete")
+    public Response<Object, Object> deleteComment(@RequestBody CommentDeleteReqDto commentDeleteReqDto) {
+        try {
+            postService.deleteComment(commentDeleteReqDto);
+            return new Response<>(SUCCESS);}
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @DeleteMapping("/posts/delete")
+    public Response<Object, Object> deletePost(@RequestBody PostDeleteReqDto postDeleteReqDto) {
+        try {
+            postService.deletePost(postDeleteReqDto);
+            return new Response<>(SUCCESS);}
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
     }
 }

@@ -22,24 +22,24 @@ public class Comment extends BaseEntity {
     @Column(name = "comment_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     private List<CommentReply> commentReplyList = new ArrayList<>();
 
-    private String content;
+    private String context;
     private int commentLikeNumber;
 
-    public Comment(Post post,User user, String content,int commentLikeNumber) {
+    public Comment(Post post,User user, String context,int commentLikeNumber) {
         this.post = post;
         this.user = user;
-        this.content = content;
+        this.context = context;
         this.commentLikeNumber = commentLikeNumber;
 
     }
