@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 
 public class CommentReplyRegisterReqDto {
    private String commentReplyContext;
-   private Long commentId;
-   private Long userId;
+
 }

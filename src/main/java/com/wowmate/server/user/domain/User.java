@@ -56,8 +56,6 @@ public class User extends BaseEntity implements UserDetails{
     //    private String image; --> ??
     private String image;
 
-    private int age;
-
     //관리자 페이지를 별도로 형성할 경우 사용
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -92,6 +90,12 @@ public class User extends BaseEntity implements UserDetails{
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public int getAge() {
+        LocalDate today = LocalDate.now();
+        int age = today.getYear() - this.birth.getYear();
+        return age;
     }
 
 }

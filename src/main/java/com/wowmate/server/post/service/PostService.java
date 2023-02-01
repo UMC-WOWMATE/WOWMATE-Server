@@ -165,10 +165,12 @@ public class PostService {
         return postInfoResDtoList;
     }
 
-    public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto) throws BaseException {
+    public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto,User currentUser) throws BaseException {
 
-        Optional<User> user = userRepository.findById(postRegisterReqDto.getUserId());
+        Optional<User> user = userRepository.findById(currentUser.getId());
 
+        if(user.isEmpty())
+            throw new BaseException(NOT_EXIST_POST);
         Post post = postRepository.save(new Post(
                 user.get(),
                 postRegisterReqDto.getPostTitle(),
@@ -185,9 +187,9 @@ public class PostService {
 
     }
 
-    public CommentRegisterResDto registerComment(CommentRegisterReqDto commentRegisterReqDto) throws BaseException{
-        Optional<Post> post = postRepository.findById(commentRegisterReqDto.getPostId());
-        Optional<User> user = userRepository.findById(commentRegisterReqDto.getUserId());
+    public CommentRegisterResDto registerComment(CommentRegisterReqDto commentRegisterReqDto,Long postId,User currentUser) throws BaseException{
+        Optional<Post> post = postRepository.findById(postId);
+        Optional<User> user = userRepository.findById(currentUser.getId());
         Comment comment = new Comment(post.get(),user.get(),commentRegisterReqDto.getCommentContext(),0);
         post.get().getCommentList().add(comment);
 
@@ -198,10 +200,10 @@ public class PostService {
         return commentRegisterResDto;
     }
 
-    public CommentReplyRegisterResDto registerCommentReply(CommentReplyRegisterReqDto commentReplyRegisterReqDto) throws BaseException {
+    public CommentReplyRegisterResDto registerCommentReply(CommentReplyRegisterReqDto commentReplyRegisterReqDto,Long commentId,User currentUser) throws BaseException {
 
-        Optional<Comment> comment = commentRepository.findById(commentReplyRegisterReqDto.getCommentId());
-        Optional<User> user =userRepository.findById(commentReplyRegisterReqDto.getUserId());
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        Optional<User> user =userRepository.findById(currentUser.getId());
 
         CommentReply commentReply = new CommentReply(comment.get(),user.get(), commentReplyRegisterReqDto.getCommentReplyContext(), 0);
         comment.get().getCommentReplyList().add(commentReply);
@@ -212,24 +214,24 @@ public class PostService {
         return commentReplyRegisterResDto;
     }
 
-    public void deleteCommentReply(CommentReplyDeleteReqDto commentReplyDeleteReqDto) throws BaseException {
+    public void deleteCommentReply(Long commentId,Long commentReplyId,User currentUser) throws BaseException {
         //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
 
-        commentReplyRepository.deleteById(commentReplyDeleteReqDto.getCommentReplyId());
+        commentReplyRepository.deleteById(commentReplyId);
         throw new BaseException(SUCCESS);
     }
 
-    public void deleteComment(CommentDeleteReqDto commentDeleteReqDto) throws BaseException {
+    public void deleteComment(Long postId,Long commentId, User currentUser) throws BaseException {
         //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
 
-        commentRepository.deleteById(commentDeleteReqDto.getCommentId());
+        commentRepository.deleteById(commentId);
         throw new BaseException(SUCCESS);
     }
 
-    public void deletePost(PostDeleteReqDto postDeleteReqDto) throws BaseException {
+    public void deletePost(Long postId,User currentUser) throws BaseException {
         //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
 
-        postRepository.deleteById(postDeleteReqDto.getPostId());
+        postRepository.deleteById(postId);
 
         throw new BaseException(SUCCESS);
     }

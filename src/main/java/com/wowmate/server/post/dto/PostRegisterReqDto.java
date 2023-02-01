@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PostRegisterReqDto {
 
-    private Long userId;
     private String postTitle;
     private String categoryName;
     private int postMember;

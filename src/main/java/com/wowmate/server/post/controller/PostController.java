@@ -5,7 +5,10 @@ import com.wowmate.server.post.dto.*;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.post.service.PostService;
 import com.wowmate.server.response.Response;
+import com.wowmate.server.user.domain.User;
+import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -18,6 +21,7 @@ import static com.wowmate.server.response.ResponseStatus.*;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final UserRepository userRepository;
 
     //게시글 전체 조회
     @GetMapping("/posts")
@@ -35,10 +39,10 @@ public class PostController {
     }
 
     @GetMapping("/posts/search")
-    public Response<List<PostInfoResDto>, Object> getPostListByTitle(@RequestBody PostTitleDto postTitleDto) {
+    public Response<List<PostInfoResDto>, Object> getPostListByTitle(@RequestParam("title") String postTitle) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getPostListByTitle(postTitleDto.getPostTitle());    //Service에 구현한 함수 사용해서 정보 가져오기
+            postInfoResDtoList = postService.getPostListByTitle(postTitle);    //Service에 구현한 함수 사용해서 정보 가져오기
             if(postInfoResDtoList.isEmpty())
                 throw new BaseException(NO_RELATED_POST);
             return new Response<>(postInfoResDtoList);
@@ -49,13 +53,13 @@ public class PostController {
 
     }
 
-    @GetMapping("/posts/info")
-    public Response<PostClickResDto,List<CommentInfoResDto>> getPostClick(@RequestBody PostIdDto postIdDto) {
+    @GetMapping("/posts/{postId}")
+    public Response<PostClickResDto,List<CommentInfoResDto>> getPostClick(@PathVariable Long postId) {
         PostClickResDto postClickResDto;
         List<CommentInfoResDto> commentInfoResDtoList;
         try {
-            postClickResDto = postService.getPostClick(postIdDto.getPostId());
-            commentInfoResDtoList = postService.getCommentList(postIdDto.getPostId());
+            postClickResDto = postService.getPostClick(postId);
+            commentInfoResDtoList = postService.getCommentList(postId);
             return new Response<>(postClickResDto, commentInfoResDtoList);
         }
         catch(BaseException e){
@@ -64,10 +68,10 @@ public class PostController {
     }
 
     @GetMapping("/posts/category")
-    public Response<List<PostInfoResDto>, Object> getAllPostListByCategory(@RequestBody CategoryNameDto categoryNameDto) {
+    public Response<List<PostInfoResDto>, Object> getAllPostListByCategory(@RequestParam("name") String categoryName) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getAllPostListByCategory(categoryNameDto.getCategoryName());
+            postInfoResDtoList = postService.getAllPostListByCategory(categoryName);
             return new Response<>(postInfoResDtoList);
         }
         catch (BaseException e) {
@@ -76,7 +80,7 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    public Response<PostRegisterResDto, Object> registerPost(@RequestBody PostRegisterReqDto postRegisterReqDto) {
+    public Response<PostRegisterResDto, Object> registerPost(@RequestBody PostRegisterReqDto postRegisterReqDto, @AuthenticationPrincipal User user) {
         try {
             if(postRegisterReqDto.getPostTitle()==null){
                 throw new BaseException(NO_TITLE);
@@ -87,7 +91,7 @@ public class PostController {
             if(postRegisterReqDto.getPostContext()==null){
                 throw new BaseException(NO_CONTEXT);
             }
-            PostRegisterResDto postRegisterResDto = postService.registerPost(postRegisterReqDto);
+            PostRegisterResDto postRegisterResDto = postService.registerPost(postRegisterReqDto,user);
             return new Response<>(postRegisterResDto);
         }
         catch(BaseException e) {
@@ -95,14 +99,14 @@ public class PostController {
         }
     }
 
-    @PostMapping("/posts/comments")
-    public Response<CommentRegisterResDto,Object> registerComment(@RequestBody CommentRegisterReqDto commentRegisterReqDto){
+    @PostMapping("/posts/{postId}/comments")
+    public Response<CommentRegisterResDto,Object> registerComment(@PathVariable Long postId, @RequestBody CommentRegisterReqDto commentRegisterReqDto, @AuthenticationPrincipal User user){
 
         try {
 
             //각종 예외처리
 
-            CommentRegisterResDto commentRegisterResDto = postService.registerComment(commentRegisterReqDto);
+            CommentRegisterResDto commentRegisterResDto = postService.registerComment(commentRegisterReqDto,postId,user);
             return new Response<>(commentRegisterResDto);
         }
         catch   (BaseException e){
@@ -111,11 +115,11 @@ public class PostController {
 
     }
 
-    @PostMapping("/posts/commentReplies")
-    public Response<CommentReplyRegisterResDto,Object> registerCommentReply(@RequestBody CommentReplyRegisterReqDto commentReplyRegisterReqDto) {
+    @PostMapping("/comments/{commentId}/commentReplies")
+    public Response<CommentReplyRegisterResDto,Object> registerCommentReply(@PathVariable Long commentId,@RequestBody CommentReplyRegisterReqDto commentReplyRegisterReqDto,@AuthenticationPrincipal User user) {
         try {
 
-            CommentReplyRegisterResDto commentReplyRegisterResDto =postService.registerCommentReply(commentReplyRegisterReqDto);
+            CommentReplyRegisterResDto commentReplyRegisterResDto =postService.registerCommentReply(commentReplyRegisterReqDto,commentId,user);
             return new Response<>(commentReplyRegisterResDto);
         }
         catch (BaseException e){
@@ -123,10 +127,10 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/posts/commentReplies/delete")
-    public Response<Object, Object> deleteCommentReply(@RequestBody CommentReplyDeleteReqDto commentReplyDeleteReqDto) {
+    @DeleteMapping("/comments/{commentId}/{commentReplyId}")
+    public Response<Object, Object> deleteCommentReply(@PathVariable Long commentId, @PathVariable Long commentReplyId,@AuthenticationPrincipal User user) {
         try {
-            postService.deleteCommentReply(commentReplyDeleteReqDto);
+            postService.deleteCommentReply(commentId,commentReplyId,user);
             return new Response<>(SUCCESS);
         }
         catch (BaseException e) {
@@ -134,21 +138,22 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/posts/comments/delete")
-    public Response<Object, Object> deleteComment(@RequestBody CommentDeleteReqDto commentDeleteReqDto) {
+    @DeleteMapping("/posts/{postId}/{commentId}")
+    public Response<Object, Object> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,@AuthenticationPrincipal User user) {
         try {
-            postService.deleteComment(commentDeleteReqDto);
+            postService.deleteComment(postId,commentId,user);
             return new Response<>(SUCCESS);}
         catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
         }
     }
 
-    @DeleteMapping("/posts/delete")
-    public Response<Object, Object> deletePost(@RequestBody PostDeleteReqDto postDeleteReqDto) {
+    @DeleteMapping("/posts/{postId}")
+    public Response<Object, Object> deletePost(@PathVariable Long postId,@AuthenticationPrincipal User user) {
         try {
-            postService.deletePost(postDeleteReqDto);
-            return new Response<>(SUCCESS);}
+            postService.deletePost(postId,user);
+            return new Response<>(SUCCESS);
+        }
         catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
         }
