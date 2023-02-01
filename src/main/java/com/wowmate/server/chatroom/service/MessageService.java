@@ -52,7 +52,7 @@ public class MessageService {
 
     }
 
-    public List<MatchMessageDto> matchRespond(User user, String roomUuid) throws BaseException {
+    public void matchRespond(User user, String roomUuid) throws BaseException {
 
         if (user == null) {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
@@ -66,10 +66,14 @@ public class MessageService {
                 .phoneNumber(user.getPhoneNumber())
                 .gender(user.getGender().toString())
                 .build();
+
         matchMessageDtos.add(matchMessageDto1);
 
-        String opponentUserEmail = chatroomRepository.findByChatroomUuidAndUserEmail(roomUuid, user.getEmail()).getOpponentUserEmail();
-        User opponentUser = userRepository.findByEmail(opponentUserEmail);
+        Chatroom chatroom = chatroomRepository.findByChatroomUuidAndUserEmail(roomUuid, user.getEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
+
+        User opponentUser = userRepository.findByEmail(chatroom.getOpponentUserEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
 
         MatchMessageDto matchMessageDto2 = MatchMessageDto.builder()
                 .School(opponentUser.getUniv())
@@ -77,9 +81,11 @@ public class MessageService {
                 .phoneNumber(opponentUser.getPhoneNumber())
                 .gender(opponentUser.getGender().toString())
                 .build();
+
         matchMessageDtos.add(matchMessageDto2);
 
-        return matchMessageDtos;
+        template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDtos.get(0));
+        template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDtos.get(1));
 
     }
 

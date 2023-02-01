@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
     public SignInResultDto signIn(SignInRequestDto signInRequestDto) throws RuntimeException {
 
         log.info("[getSignInResult] signDataHandler 로 회원 정보 요청");
-        User user = userRepository.findByEmail(signInRequestDto.getEmail());
+        User user = userRepository.findByEmail(signInRequestDto.getEmail()).get();
 
         log.info("[getSignInResult] Email : {}", signInRequestDto.getEmail());
         log.info("[getSignInResult] 패스워드 비교 수행");

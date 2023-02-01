@@ -19,18 +19,17 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(value = "/chats")
 @Tag(name = "Chatroom", description = "채팅방 API")
 public class ChatroomController {
 
     private final ChatroomService chatroomService;
 
     @Operation(tags = "Chatroom", description = "채팅방 목록 조회")
-    @GetMapping
+    @GetMapping(value = "/chats")
     public Response<List<GetChatroomListDto>, Object> getChatroomList(@AuthenticationPrincipal User user) {
 
         try {
-
+            log.info("현재 로그인한 유저: {}", user.getEmail());
             List<GetChatroomListDto> chatroomListDto = chatroomService.getChatroomList(user);
 
             return new Response<>(chatroomListDto);
@@ -48,7 +47,7 @@ public class ChatroomController {
     public Response<GetChatroomDto, Object> getChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
         try {
-
+            log.info("현재 로그인한 유저: {}", user.getEmail());
             GetChatroomDto chatroomDto = chatroomService.getChatroom(roomUuid, user);
             return new Response<>(chatroomDto);
 
@@ -65,7 +64,7 @@ public class ChatroomController {
     public Response<List<GetChatroomListDto>, Object> deleteChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
         try {
-
+            log.info("현재 로그인한 유저: {}", user.getEmail());
             List<GetChatroomListDto> chatroomListDto = chatroomService.deleteChatroom(roomUuid, user);
             return new Response<>(chatroomListDto);
 

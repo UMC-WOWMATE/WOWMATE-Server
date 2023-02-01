@@ -20,10 +20,10 @@ public class CreateChatroom extends BaseEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "create_chatroom_id")
+    @Column(name = "chatroom_id")
     private Long id;
 
-    @Column(name = "create_chatroom_uuid")
+    @Column(name = "chatroom_uuid", unique = true)
     private String uuid;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,15 +34,14 @@ public class CreateChatroom extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createChatroom")
+    @OneToMany(mappedBy = "createChatroom")
     private List<Chatroom> chatrooms = new ArrayList<>();
+
 
     private String postUserEmail;
 
     //== 연관 관계 메서드==//
     public CreateChatroom(Post post, User user) {
-        this.uuid = UUID.randomUUID().toString();
         this.post = post;
         this.user = user;
         this.postUserEmail = post.getUser().getEmail();

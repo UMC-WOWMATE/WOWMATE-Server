@@ -12,10 +12,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class GetChatroomDto {
 
-    private String opponentImg;
+    // private String opponentImg;
     private String postTitle;
     private String postCategory;
     private String createDate;

@@ -4,6 +4,7 @@ import com.wowmate.server.chatroom.domain.Chatroom;
 import com.wowmate.server.chatroom.domain.CreateChatroom;
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
+import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.CreateChatroomRepository;
 import com.wowmate.server.post.domain.Post;
@@ -13,12 +14,12 @@ import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ChatroomService {
 
     private final ChatroomRepository chatroomRepository;
@@ -44,36 +46,39 @@ public class ChatroomService {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        List<GetChatroomListDto> chatroomListDtos = chatroomRepository
-                .findByUserEmail(user.getUsername())
+        List<GetChatroomListDto> chatroomListDtos = chatroomRepository.findByUserEmail(user.getEmail())
                 .stream()
                 .map(
                         chatroom ->
                                 GetChatroomListDto.builder()
                                         .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
-                                        .lastMessage(chatroom.getMessages().get(chatroom.getMessages().size() - 1).getContent())
-                                        .lastMessageDate(chatroom.getMessages().get(chatroom.getMessages().size() - 1)
-                                                .getCreatedDate().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                                        .build()
+                                        .lastMessage(
+                                                (chatroom.getMessages().isEmpty()) ?
+                                                null : (chatroom.getMessages().get(chatroom.getMessages().size() - 1).getContent())
+                                        )
+                                        .lastMessageDate(
+                                                (chatroom.getMessages().isEmpty()) ?
+                                                null : (chatroom.getMessages().get(chatroom.getMessages().size() - 1).getCreatedDate()
+                                                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")))
+                                        )
+                                        .build() // 원래 로직에서는 메시지를 보내야 채팅방이 만들어지므로 null이 될리가 없음 만약 null이면 예외처리를 해야함
                 )
-                .sorted(Comparator.comparing(GetChatroomListDto::getLastMessageDate).reversed())
+                .sorted(Comparator.comparing(GetChatroomListDto::getLastMessageDate))
                 .collect(Collectors.toList());
 
         return chatroomListDtos;
-
     }
 
 
-    @Transactional(readOnly = true)
     // 특정 채팅방 조회
+    @Transactional(readOnly = true)
     public GetChatroomDto getChatroom(String roomUuid, User user) throws BaseException {
 
         if (user == null) {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        Chatroom chatroom = chatroomRepository
-                .findByChatroomUuidAndUserEmail(roomUuid,user.getEmail())
+        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
         GetChatroomDto chatroomDto = GetChatroomDto
@@ -81,8 +86,8 @@ public class ChatroomService {
                 .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
                 .createDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
                 .messageList(chatroom.getMessages())
-                .opponentImg(userRepository.findByEmail(chatroom.getOpponentUserEmail()).getImage())
-                .postCategory(chatroom.getCreateChatroom().getPost().getCategory().getName())
+                //.opponentImg(chatroom.getOpponentUserEmail())
+                .postCategory(chatroom.getCreateChatroom().getPost().getCategory().getName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
                 .build();
 
         return chatroomDto;
@@ -97,7 +102,7 @@ public class ChatroomService {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        // createChatroom에서 삭제해야하나?...흠
+        // createChatroom에서 삭제해야하나? 삭제 할 필요 없겠지?
 
         Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
@@ -111,13 +116,12 @@ public class ChatroomService {
 
 
     // 채팅방 생성
-    public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
+    public GetChatroomDto createChatroom(MessageDto messageDto) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        User user = userRepository.findByEmail(messageDto.getSenderEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
 
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findById(messageDto.getPostId())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
         CreateChatroom createChatroom = new CreateChatroom(post, user);
@@ -129,11 +133,12 @@ public class ChatroomService {
         chatroomRepository.save(chatroomForUser);
         chatroomRepository.save(chatroomForPostUser);
 
-        GetChatroomDto getChatroomDto = this.getChatroom(chatroomForUser.getUuid(), user);
+        GetChatroomDto getChatroomDto = getChatroom(chatroomForUser.getUuid(), user);
 
         return getChatroomDto;
 
     }
+
 
     // post에 같은 유저가 채팅 중복 생성 금지
     // 자기가 쓴 글에 채팅 안 만들어져야함
