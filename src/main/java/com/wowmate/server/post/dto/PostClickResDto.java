@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PostClickDto {
+public class PostClickResDto {
     private String postTitle;
     private String categoryName;
     private String postTag1;

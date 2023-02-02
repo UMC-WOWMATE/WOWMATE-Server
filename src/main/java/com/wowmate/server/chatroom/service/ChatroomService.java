@@ -75,7 +75,7 @@ public class ChatroomService {
                 .createDate(chatroom.getCreatedDate())
                 .messageList(chatroom.getMessages())
                 .opponentImg(userRepository.findById(chatroom.getOpponentUserId()).get().getImage())
-                .postCategory(chatroom.getCreateChatroom().getPost().getCategory().getName())
+                .postCategory(chatroom.getCreateChatroom().getPost().getCategoryName())
                 .build();
 
         return chatroomDto;
