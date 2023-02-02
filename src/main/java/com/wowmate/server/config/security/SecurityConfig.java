@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests() // 리퀘스트에 대한 사용권한 체크
                 .antMatchers("/sign-api/sign-in", "/sign-api/sign-up", "/sign-api/exception",
-                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
+                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/emailConfirm", "/sign-api/univ")
                 .permitAll() // 가입 및 로그인 주소는 허용
                 .antMatchers("/admin-api/**")
                 .hasRole("ADMIN")
