@@ -1,7 +1,10 @@
 package com.wowmate.server.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -9,6 +12,7 @@ import java.util.List;
 public class CommentInfoResDto {
     private String commentContext;
     private int likeNumber;
-    private String createdDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdDate;
     List<CommentReplyInfoResDto> commentReplyDtoList;
 }

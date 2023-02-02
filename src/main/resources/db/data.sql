@@ -10,3 +10,4 @@
 -- insert into user_chatroom(user_chatroom_id, opponent_user_email, chatroom_id, user_id, created_date) values(5001, "email", 1000, 1, "2023-01-01T01:01:12");
 --
 -- insert into message(message_id, created_date, content, sender_email, chatroom_id) values (100, "2023-01-01T01:01:12", "ㅎㅇ", "email", 1000);
+
