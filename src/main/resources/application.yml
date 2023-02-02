@@ -1,8 +1,6 @@
 jwt:
   secret: ${JWT_SECRET}
 spring:
-
-
   jackson:
     # Date format string or a fully-qualified date format class name. For instance, 'yyyy-MM-dd HH:mm:ss'
     date-format: "yyyy-MM-dd HH:mm:ss.SSS"
@@ -19,9 +17,6 @@ spring:
     hibernate:
         #ddl-auro: update
         ddl-auto: create
-        #hbm2ddl:
-         # import_files: classpath:db/data.sql # DB ?? ????? ??
-          #import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
         connection:
           charSet: UTF-8 # ??? ??
 
@@ -34,4 +29,17 @@ spring:
       mode: always
       data-locations: classpath:/db/data.sql
 
+#  mail:
+#    default-encoding: UTF-8
+#    host: smtp.gmail.com
+#    port: 587
+#    username: [gyun1712@gmail.com] #<자기 구글 E-mail주소>
+#    password: [jfnh jemp eies pdpj] #<구글 비밀번호=>앱 비밀번호로 변경>
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#    protocol: smtp
 
