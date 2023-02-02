@@ -53,11 +53,9 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public Response<PostClickDto,List<CommentDto>> getPostClick(@PathVariable Long postId) {
-
-        PostClickDto postClickDto;
-        List<CommentDto> commentDtoList;
-
+    public Response<PostClickResDto,List<CommentInfoResDto>> getPostClick(@PathVariable Long postId) {
+        PostClickResDto postClickResDto;
+        List<CommentInfoResDto> commentInfoResDtoList;
         try {
             postClickResDto = postService.getPostClick(postId);
             commentInfoResDtoList = postService.getCommentList(postId);
@@ -66,7 +64,6 @@ public class PostController {
         catch(BaseException e){
             return new Response<>(e.getResponseStatus());
         }
-
     }
 
     @GetMapping("/posts/category")
