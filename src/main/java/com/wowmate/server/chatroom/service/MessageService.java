@@ -2,10 +2,12 @@ package com.wowmate.server.chatroom.service;
 
 import com.wowmate.server.chatroom.domain.Chatroom;
 import com.wowmate.server.chatroom.domain.Message;
+import com.wowmate.server.chatroom.domain.UserChatroom;
 import com.wowmate.server.chatroom.dto.MatchMessageDto;
 import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.MessageRepository;
+import com.wowmate.server.chatroom.repository.UserChatroomRepository;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
@@ -15,7 +17,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class MessageService {
     private final SimpMessagingTemplate template;
     private final MessageRepository messageRepository;
     private final ChatroomRepository chatroomRepository;
+
+    private final UserChatroomRepository userChatroomRepository;
 
     private final UserRepository userRepository;
 
@@ -69,7 +72,7 @@ public class MessageService {
 
         matchMessageDtos.add(matchMessageDto1);
 
-        Chatroom chatroom = chatroomRepository.findByChatroomUuidAndUserEmail(roomUuid, user.getEmail())
+        UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
         User opponentUser = userRepository.findByEmail(chatroom.getOpponentUserEmail())

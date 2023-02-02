@@ -1,12 +1,11 @@
 package com.wowmate.server.chatroom.service;
 
 import com.wowmate.server.chatroom.domain.Chatroom;
-import com.wowmate.server.chatroom.domain.CreateChatroom;
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
 import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
-import com.wowmate.server.chatroom.repository.CreateChatroomRepository;
+import com.wowmate.server.chatroom.repository.UserChatroomRepository;
 import com.wowmate.server.post.domain.Post;
 import com.wowmate.server.post.repository.PostRepository;
 import com.wowmate.server.response.BaseException;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +30,8 @@ public class ChatroomService {
 
     private final ChatroomRepository chatroomRepository;
 
-    private final CreateChatroomRepository createChatroomRepository;
+    private final UserChatroomRepository userChatroomRepository;
+
     private final UserRepository userRepository;
 
     private final PostRepository postRepository;
@@ -46,12 +45,12 @@ public class ChatroomService {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        List<GetChatroomListDto> chatroomListDtos = chatroomRepository.findByUserEmail(user.getEmail())
+        List<GetChatroomListDto> chatroomListDtos = chatroomRepository.findChatroomsByRequestUserEmail(user.getEmail())
                 .stream()
                 .map(
                         chatroom ->
                                 GetChatroomListDto.builder()
-                                        .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
+                                        .postTitle(chatroom.getPost().getTitle())
                                         .lastMessage(
                                                 (chatroom.getMessages().isEmpty()) ?
                                                 null : (chatroom.getMessages().get(chatroom.getMessages().size() - 1).getContent())
@@ -81,13 +80,12 @@ public class ChatroomService {
         Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
-        GetChatroomDto chatroomDto = GetChatroomDto
-                .builder()
-                .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
+        GetChatroomDto chatroomDto = GetChatroomDto.builder()
+                .postTitle(chatroom.getPost().getTitle())
                 .createDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
                 .messageList(chatroom.getMessages())
                 //.opponentImg(chatroom.getOpponentUserEmail())
-                .postCategory(chatroom.getCreateChatroom().getPost().getCategory().getName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
+                .postCategory(chatroom.getPost().getCategory().getName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
                 .build();
 
         return chatroomDto;
@@ -101,8 +99,6 @@ public class ChatroomService {
         if (user == null) {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
-
-        // createChatroom에서 삭제해야하나? 삭제 할 필요 없겠지?
 
         Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
@@ -124,16 +120,11 @@ public class ChatroomService {
         Post post = postRepository.findById(messageDto.getPostId())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
-        CreateChatroom createChatroom = new CreateChatroom(post, user);
-        createChatroomRepository.save(createChatroom);
+        Chatroom chatroom = new Chatroom(post, user);
 
-        Chatroom chatroomForUser = Chatroom.createChatroomForUser(createChatroom);
-        Chatroom chatroomForPostUser = Chatroom.createChatroomForPostUser(createChatroom);
+        chatroomRepository.save(chatroom);
 
-        chatroomRepository.save(chatroomForUser);
-        chatroomRepository.save(chatroomForPostUser);
-
-        GetChatroomDto getChatroomDto = getChatroom(chatroomForUser.getUuid(), user);
+        GetChatroomDto getChatroomDto = getChatroom(chatroom.getUuid(), user);
 
         return getChatroomDto;
 

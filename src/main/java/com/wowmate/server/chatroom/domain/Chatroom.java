@@ -4,15 +4,16 @@ import com.wowmate.server.BaseEntity;
 import com.wowmate.server.post.domain.Post;
 import com.wowmate.server.user.domain.User;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
 @Getter
-@Setter
 public class Chatroom extends BaseEntity {
 
     @Id
@@ -23,34 +24,28 @@ public class Chatroom extends BaseEntity {
     @Column(name = "chatroom_uuid", unique = true)
     private String uuid;
 
-    @ManyToOne(fetch  = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "create_chatroom_id")
-    private CreateChatroom createChatroom;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_user_id")
+    private User requestUser;
+
+    @OneToMany(mappedBy = "chatroom")
     private List<Message> messages = new ArrayList<>();
 
-    private String userEmail;
-    private String opponentUserEmail;
+    @OneToMany(mappedBy = "chatroom")
+    private List<UserChatroom> userChatrooms = new ArrayList<>();
 
-    public static Chatroom createChatroomForUser(CreateChatroom createChatroom) {
-        Chatroom chatroom = new Chatroom();
-        chatroom.setCreateChatroom(createChatroom);
-        chatroom.setUserEmail(createChatroom.getUser().getEmail());
-        chatroom.setOpponentUserEmail(createChatroom.getPostUserEmail());
-        chatroom.setUuid(createChatroom.getUuid());
+    private String postUserEmail;
 
-        return chatroom;
-    }
-
-    public static Chatroom createChatroomForPostUser(CreateChatroom createChatroom) {
-        Chatroom chatroom = new Chatroom();
-        chatroom.setCreateChatroom(createChatroom);
-        chatroom.setUserEmail(createChatroom.getPostUserEmail());
-        chatroom.setOpponentUserEmail(createChatroom.getUser().getEmail());
-        chatroom.setUuid(createChatroom.getUuid());
-
-        return chatroom;
+    //== 연관 관계 메서드==//
+    public Chatroom(Post post, User requestUser) {
+        this.post = post;
+        this.requestUser = requestUser;
+        this.postUserEmail = post.getUser().getEmail();
+        this.uuid = UUID.randomUUID().toString();
     }
 
 }

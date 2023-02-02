@@ -1,12 +1,6 @@
 package com.wowmate.server.chatroom.dto;
 
-import com.wowmate.server.chatroom.domain.Chatroom;
-import com.wowmate.server.user.domain.User;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 @Builder
 @NoArgsConstructor
