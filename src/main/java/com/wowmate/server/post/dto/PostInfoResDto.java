@@ -16,6 +16,8 @@ public class PostInfoResDto {
     private int postLikeNumber;
     private String schoolName;
 
+    private String postMember;
+
     private String createdBy;
 
 }
