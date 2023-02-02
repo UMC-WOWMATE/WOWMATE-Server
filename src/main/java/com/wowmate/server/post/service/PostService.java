@@ -164,12 +164,12 @@ public class PostService {
                     commentReplyInfoResDtoList.add(new CommentReplyInfoResDto(
                             r.getContext(),
                             r.getCommentReplyLikeNumber(),
-                            r.getCreatedBy()));
+                            r.getCreatedDate()));
                 }
                 commentInfoResDtoList.add(new CommentInfoResDto(
                                 c.getContext(),
                                 c.getCommentLikeNumber(),
-                                c.getCreatedBy(),
+                                c.getCreatedDate(),
                                 commentReplyInfoResDtoList
                         )
                 );
