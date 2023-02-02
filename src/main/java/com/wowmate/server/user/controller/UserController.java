@@ -30,7 +30,7 @@ public class UserController {
     private final UniversityRepository universityRepository;
 
     @PostMapping(value = "/sign-in")
-    public SignInResultDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException {
+    public SignInResultDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException, BaseException {
 
         log.info("[signIn] 로그인을 시도하고 있습니다. Email : {}, pw : ****", signInRequestDto.getEmail());
         SignInResultDto signInResultDto = userService.signIn(signInRequestDto);
