@@ -16,6 +16,8 @@ public enum ResponseStatus {
     //게시글 예외 처리 만들 때, 여기 만들면 됨!
     //300~GET요청
     NO_RELATED_POST(false,300,"관련된 게시글이 없습니다."),
+    NO_RELATED_COMMENT(false,300,"해당 게시글의 댓글이 아닙니다."),
+    NO_RELATED_COMMENTREPLY(false,300,"해당 댓글의 대댓글이 아닙니다."),
     NO_COMMENT(false,301,"댓글이 없습니다."),
     //330~POST요청
     NO_TITLE(false, 330, "제목을 입력해주세요."),
@@ -29,6 +31,15 @@ public enum ResponseStatus {
 
     //380~공용
     NOT_EXIST_POST(false, 380, "존재하지 않는 게시글입니다."),
+<<<<<<< HEAD
+=======
+    NOT_EXIST_COMMENT(false, 380, "존재하지 않는 댓글입니다."),
+    NOT_EXIST_COMMENTREPLY(false, 380, "존재하지 않는 대댓글입니다.");
+
+
+
+
+>>>>>>> 9cbc71e96b678c71b7b422d4852e14c2515263a4
 
 
     //400 ~ USER ERROR

@@ -84,6 +84,7 @@ public class ChatroomService {
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
+<<<<<<< HEAD
 
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
                 .postTitle(chatroom.getChatroom().getPost().getTitle())
@@ -100,6 +101,15 @@ public class ChatroomService {
                 )
                 .opponentImg(chatroom.getOpponentUserImg())
                 .postCategory(chatroom.getChatroom().getPost().getCategory().getName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
+=======
+        GetChatroomDto chatroomDto = GetChatroomDto
+                .builder()
+                .postTitle(chatroom.getCreateChatroom().getPost().getTitle())
+                .createDate(chatroom.getCreatedDate())
+                .messageList(chatroom.getMessages())
+                .opponentImg(userRepository.findById(chatroom.getOpponentUserId()).get().getImage())
+                .postCategory(chatroom.getCreateChatroom().getPost().getCategoryName())
+>>>>>>> 9cbc71e96b678c71b7b422d4852e14c2515263a4
                 .build();
 
         return chatroomDto;

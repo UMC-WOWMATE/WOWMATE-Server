@@ -32,31 +32,29 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
-    private Category category;
 
     private String title;
     private String context;
     private int likeNumber;
-    private int hits;
-
+    private String categoryName;
     private String tag1;
     private String tag2;
     private String tag3;
     private String tag4;
     private String tag5;
 
-    public Post(Category category, String title, String context, int likeNumber) {
-        this.category = category;
-        this.title = title;
-        this.context = context;
-        this.likeNumber = likeNumber;
-    }
+    private int member;
 
-    public Post(String title, String context, int likeNumber) {
+    public Post(User user, String title, String context, String categoryName, String tag1, String tag2, String tag3, String tag4, String tag5, int member) {
+        this.user = user;
         this.title = title;
         this.context = context;
-        this.likeNumber = likeNumber;
+        this.categoryName = categoryName;
+        this.tag1 = tag1;
+        this.tag2 = tag2;
+        this.tag3 = tag3;
+        this.tag4 = tag4;
+        this.tag5 = tag5;
+        this.member = member;
     }
 }
