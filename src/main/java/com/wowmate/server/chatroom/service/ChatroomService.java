@@ -84,8 +84,6 @@ public class ChatroomService {
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
-<<<<<<< HEAD
-
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
                 .postTitle(chatroom.getChatroom().getPost().getTitle())
                 .createdDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
