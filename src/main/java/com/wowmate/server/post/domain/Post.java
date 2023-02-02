@@ -42,7 +42,9 @@ public class Post extends BaseEntity {
     private String tag4;
     private String tag5;
 
-    public Post(User user, String title, String context, String categoryName, String tag1, String tag2, String tag3, String tag4, String tag5) {
+    private int member;
+
+    public Post(User user, String title, String context, String categoryName, String tag1, String tag2, String tag3, String tag4, String tag5, int member) {
         this.user = user;
         this.title = title;
         this.context = context;
@@ -52,5 +54,6 @@ public class Post extends BaseEntity {
         this.tag3 = tag3;
         this.tag4 = tag4;
         this.tag5 = tag5;
+        this.member = member;
     }
 }

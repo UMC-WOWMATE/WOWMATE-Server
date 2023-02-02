@@ -1,7 +1,10 @@
 package com.wowmate.server.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -16,5 +19,6 @@ public class PostClickResDto {
     private int postLikeNumber;
     private String postContext;
 
-    private String createdBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdDate;
 }

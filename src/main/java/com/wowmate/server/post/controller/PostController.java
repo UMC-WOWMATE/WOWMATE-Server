@@ -22,8 +22,6 @@ import static com.wowmate.server.response.ResponseStatus.*;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
-    private final UserRepository userRepository;
-
     //게시글 전체 조회
     @GetMapping("/posts")
     public Response<List<PostInfoResDto>, Object> getAllPostList(){
@@ -84,15 +82,7 @@ public class PostController {
     public Response<PostRegisterResDto, Object> registerPost(@RequestBody PostRegisterReqDto postRegisterReqDto,@AuthenticationPrincipal User user) {
 
         try {
-            if(postRegisterReqDto.getPostTitle()==null){
-                throw new BaseException(NO_TITLE);
-            }
-            if(postRegisterReqDto.getCategoryName()==null){
-                throw new BaseException(NO_CATEGORY);
-            }
-            if(postRegisterReqDto.getPostContext()==null){
-                throw new BaseException(NO_CONTEXT);
-            }
+
             PostRegisterResDto postRegisterResDto = postService.registerPost(postRegisterReqDto,user);
             return new Response<>(postRegisterResDto);
         }

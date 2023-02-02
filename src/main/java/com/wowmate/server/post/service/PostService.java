@@ -11,7 +11,6 @@ import com.wowmate.server.post.repository.PostRepository;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.wowmate.server.response.ResponseStatus.*;
+
 
 
 @Service
@@ -45,43 +45,84 @@ public class PostService {
         if(postList.isEmpty())
             throw new BaseException(SUCCESS_NO_POST);
         for (Post p : postList) {
-            postInfoResDtoList.add(new PostInfoResDto(
-                            p.getTitle(),
-                            p.getCategoryName(),
-                            p.getTag1(),
-                            p.getTag2(),
-                            p.getTag3(),
-                            p.getTag4(),
-                            p.getTag5(),
-                            p.getLikeNumber(),
-                            p.getUser().getUniv(),
-                            p.getCreatedBy()
-                    )
-            );
+            if(p.getMember() == 0) {
+                postInfoResDtoList.add(new PostInfoResDto(
+                                p.getTitle(),
+                                p.getCategoryName(),
+                                p.getTag1(),
+                                p.getTag2(),
+                                p.getTag3(),
+                                p.getTag4(),
+                                p.getTag5(),
+                                p.getLikeNumber(),
+                                p.getUser().getUniv(),
+                                "무관",
+                                p.getCreatedDate()
+                        )
+                );
+            }
+            else {
+                postInfoResDtoList.add(new PostInfoResDto(
+                                p.getTitle(),
+                                p.getCategoryName(),
+                                p.getTag1(),
+                                p.getTag2(),
+                                p.getTag3(),
+                                p.getTag4(),
+                                p.getTag5(),
+                                p.getLikeNumber(),
+                                p.getUser().getUniv(),
+                                Integer.toString(p.getMember()),
+                                p.getCreatedDate()
+                        )
+                );
+            }
         }
         return postInfoResDtoList;                     //반환
     }
 
     //게시글 제목 검색
     public List<PostInfoResDto> getPostListByTitle(String postTitle) throws BaseException {
+        if(postTitle.isBlank())
+            throw new BaseException(NO_TITLE);
         List<Post> postList;
         List<PostInfoResDto> postInfoResDtoList = new ArrayList<>();  //반환할 List를 생성
         postList = postRepository.findByTitleContaining(postTitle);
         if(postList.isEmpty())
             throw new BaseException(NO_RELATED_POST);
         for (Post p : postList) {
-            postInfoResDtoList.add(new PostInfoResDto(
-                    p.getTitle(),
-                    p.getCategoryName(),
-                    p.getTag1(),
-                    p.getTag2(),
-                    p.getTag3(),
-                    p.getTag4(),
-                    p.getTag5(),
-                    p.getLikeNumber(),
-                    p.getUser().getUniv(),
-                    p.getCreatedBy())
-            );
+            if(p.getMember() == 0) {
+                postInfoResDtoList.add(new PostInfoResDto(
+                                p.getTitle(),
+                                p.getCategoryName(),
+                                p.getTag1(),
+                                p.getTag2(),
+                                p.getTag3(),
+                                p.getTag4(),
+                                p.getTag5(),
+                                p.getLikeNumber(),
+                                p.getUser().getUniv(),
+                                "무관",
+                                p.getCreatedDate()
+                        )
+                );
+            }
+            else {
+                postInfoResDtoList.add(new PostInfoResDto(
+                                p.getTitle(),
+                                p.getCategoryName(),
+                                p.getTag1(),
+                                p.getTag2(),
+                                p.getTag3(),
+                                p.getTag4(),
+                                p.getTag5(),
+                                p.getLikeNumber(),
+                                p.getUser().getUniv(),
+                                Integer.toString(p.getMember()),
+                                p.getCreatedDate()
+                        )
+                );
+            }
         }
         return postInfoResDtoList;                     //반환
     }
@@ -102,7 +143,7 @@ public class PostService {
                     post.get().getTag5(),
                     post.get().getLikeNumber(),
                     post.get().getContext(),
-                    post.get().getCreatedBy()
+                    post.get().getCreatedDate()
             );
         }
         catch(Exception e) {
@@ -149,19 +190,38 @@ public class PostService {
         if(postList.isEmpty())
             throw new BaseException(NO_RELATED_POST);
         for (Post p : postList) {
-            postInfoResDtoList.add(new PostInfoResDto(
-                    p.getTitle(),
-                    p.getCategoryName(),
-                    p.getTag1(),
-                    p.getTag2(),
-                    p.getTag3(),
-                    p.getTag4(),
-                    p.getTag5(),
-                    p.getLikeNumber(),
-                    p.getUser().getUniv(),
-                    p.getCreatedBy())
-            );
-
+            if(p.getMember() == 0) {
+                postInfoResDtoList.add(new PostInfoResDto(
+                                p.getTitle(),
+                                p.getCategoryName(),
+                                p.getTag1(),
+                                p.getTag2(),
+                                p.getTag3(),
+                                p.getTag4(),
+                                p.getTag5(),
+                                p.getLikeNumber(),
+                                p.getUser().getUniv(),
+                                "무관",
+                                p.getCreatedDate()
+                        )
+                );
+            }
+            else {
+                postInfoResDtoList.add(new PostInfoResDto(
+                                p.getTitle(),
+                                p.getCategoryName(),
+                                p.getTag1(),
+                                p.getTag2(),
+                                p.getTag3(),
+                                p.getTag4(),
+                                p.getTag5(),
+                                p.getLikeNumber(),
+                                p.getUser().getUniv(),
+                                Integer.toString(p.getMember()),
+                                p.getCreatedDate()
+                        )
+                );
+            }
         }
         return postInfoResDtoList;
     }
@@ -169,6 +229,16 @@ public class PostService {
     public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto, User currentUser) throws BaseException {
 
         User user = userRepository.findByEmail(currentUser.getUsername());
+
+        if(postRegisterReqDto.getPostTitle().isBlank()){
+            throw new BaseException(NO_TITLE);
+        }
+        if(postRegisterReqDto.getCategoryName().isBlank()){
+            throw new BaseException(NO_CATEGORY);
+        }
+        if(postRegisterReqDto.getPostContext().isBlank()){
+            throw new BaseException(NO_CONTEXT);
+        }
 
         Post post = postRepository.save(new Post(
                 user,
@@ -179,19 +249,25 @@ public class PostService {
                 postRegisterReqDto.getTag2(),
                 postRegisterReqDto.getTag3(),
                 postRegisterReqDto.getTag4(),
-                postRegisterReqDto.getTag5())
+                postRegisterReqDto.getTag5(),
+                postRegisterReqDto.getPostMember())
         );
         PostRegisterResDto postRegisterResDto = new PostRegisterResDto(post.getId());
         return postRegisterResDto;
-
     }
 
     public CommentRegisterResDto registerComment(CommentRegisterReqDto commentRegisterReqDto,Long postId,User currentUser) throws BaseException{
         Optional<Post> post = postRepository.findById(postId);
         Optional<User> user = userRepository.findById(currentUser.getId());
-        Comment comment = new Comment(post.get(),user.get(),commentRegisterReqDto.getCommentContext(),0);
-        post.get().getCommentList().add(comment);
 
+        if(post.isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
+        if(commentRegisterReqDto.getCommentContext().isBlank()) {
+            throw new BaseException(NO_CONTEXT);
+        }
+
+        Comment comment = new Comment(post.get(),user.get(),commentRegisterReqDto.getCommentContext(),0);
         commentRepository.save(comment);
 
         CommentRegisterResDto commentRegisterResDto = new CommentRegisterResDto(comment.getId());
@@ -200,9 +276,15 @@ public class PostService {
     }
 
     public CommentReplyRegisterResDto registerCommentReply(CommentReplyRegisterReqDto commentReplyRegisterReqDto,Long commentId,User currentUser) throws BaseException {
-
         Optional<Comment> comment = commentRepository.findById(commentId);
         Optional<User> user =userRepository.findById(currentUser.getId());
+
+        if(comment.isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        if(commentReplyRegisterReqDto.getCommentReplyContext().isBlank()) {
+            throw new BaseException(NO_CONTEXT);
+        }
 
         CommentReply commentReply = new CommentReply(comment.get(),user.get(), commentReplyRegisterReqDto.getCommentReplyContext(), 0);
         comment.get().getCommentReplyList().add(commentReply);
@@ -215,20 +297,40 @@ public class PostService {
 
     public void deleteCommentReply(Long commentId,Long commentReplyId,User currentUser) throws BaseException {
         //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
-
+        if(commentRepository.findById(commentId).isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        if(commentReplyRepository.findById(commentReplyId).isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENTREPLY);
+        }
+        if(commentReplyRepository.findById(commentReplyId).get().getComment().getId() != commentId) {
+            throw new BaseException(NO_RELATED_COMMENTREPLY);
+        }
         commentReplyRepository.deleteById(commentReplyId);
         throw new BaseException(SUCCESS);
     }
 
     public void deleteComment(Long postId,Long commentId, User currentUser) throws BaseException {
-        //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
+        //예외처리 해야댐  예를들어 지우려는데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
+        if(postRepository.findById(postId).isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
+        if(commentRepository.findById(commentId).isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        if(commentRepository.findById(commentId).get().getPost().getId() != postId) {
+            throw new BaseException(NO_RELATED_COMMENT);
+        }
 
         commentRepository.deleteById(commentId);
         throw new BaseException(SUCCESS);
     }
 
     public void deletePost(Long postId,User currentUser) throws BaseException {
-        //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
+
+        if(postRepository.findById(postId).isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
 
         postRepository.deleteById(postId);
 
