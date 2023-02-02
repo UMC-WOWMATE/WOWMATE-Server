@@ -31,16 +31,9 @@ public enum ResponseStatus {
 
     //380~공용
     NOT_EXIST_POST(false, 380, "존재하지 않는 게시글입니다."),
-<<<<<<< HEAD
-=======
+
     NOT_EXIST_COMMENT(false, 380, "존재하지 않는 댓글입니다."),
     NOT_EXIST_COMMENTREPLY(false, 380, "존재하지 않는 대댓글입니다.");
-
-
-
-
->>>>>>> 9cbc71e96b678c71b7b422d4852e14c2515263a4
-
 
     //400 ~ USER ERROR
     //로그인 예외 처리 만들 때, 여기 만들면 됨!
