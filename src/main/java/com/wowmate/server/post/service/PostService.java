@@ -57,7 +57,7 @@ public class PostService {
                                 p.getLikeNumber(),
                                 p.getUser().getUniv(),
                                 "무관",
-                                p.getCreatedBy()
+                                p.getCreatedDate()
                         )
                 );
             }
@@ -73,7 +73,7 @@ public class PostService {
                                 p.getLikeNumber(),
                                 p.getUser().getUniv(),
                                 Integer.toString(p.getMember()),
-                                p.getCreatedBy()
+                                p.getCreatedDate()
                         )
                 );
             }
@@ -103,7 +103,7 @@ public class PostService {
                                 p.getLikeNumber(),
                                 p.getUser().getUniv(),
                                 "무관",
-                                p.getCreatedBy()
+                                p.getCreatedDate()
                         )
                 );
             }
@@ -119,7 +119,7 @@ public class PostService {
                                 p.getLikeNumber(),
                                 p.getUser().getUniv(),
                                 Integer.toString(p.getMember()),
-                                p.getCreatedBy()
+                                p.getCreatedDate()
                         )
                 );
             }
@@ -143,7 +143,7 @@ public class PostService {
                     post.get().getTag5(),
                     post.get().getLikeNumber(),
                     post.get().getContext(),
-                    post.get().getCreatedBy()
+                    post.get().getCreatedDate()
             );
         }
         catch(Exception e) {
@@ -202,7 +202,7 @@ public class PostService {
                                 p.getLikeNumber(),
                                 p.getUser().getUniv(),
                                 "무관",
-                                p.getCreatedBy()
+                                p.getCreatedDate()
                         )
                 );
             }
@@ -218,7 +218,7 @@ public class PostService {
                                 p.getLikeNumber(),
                                 p.getUser().getUniv(),
                                 Integer.toString(p.getMember()),
-                                p.getCreatedBy()
+                                p.getCreatedDate()
                         )
                 );
             }
