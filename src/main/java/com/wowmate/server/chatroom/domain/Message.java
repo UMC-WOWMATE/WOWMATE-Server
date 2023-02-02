@@ -6,7 +6,6 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +20,7 @@ public class Message extends BaseEntity {
     @JoinColumn(name = "chatroom_id")
     private Chatroom chatroom;
 
-    private String senderEmail;
+    private Long sendUserId;
 
     private String content;
 

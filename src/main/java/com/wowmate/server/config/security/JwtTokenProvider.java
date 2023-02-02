@@ -101,7 +101,7 @@ public class JwtTokenProvider {
      */
 //    public String resolveToken(HttpServletRequest request){
 //        log.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-//        return request.getHeader("X-AUTH-TOKEN");
+//        return request.getHeader("Authorization"); // Bearer accessToken
 //    }
 
     public String resolveToken(HttpServletRequest request) {
@@ -122,6 +122,7 @@ public class JwtTokenProvider {
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             log.info("[validateToken] 토큰 유효 체크 예외 발생");
             return false;
         }
