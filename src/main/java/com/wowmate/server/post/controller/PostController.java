@@ -53,16 +53,11 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-<<<<<<< HEAD
     public Response<PostClickDto,List<CommentDto>> getPostClick(@PathVariable Long postId) {
 
         PostClickDto postClickDto;
         List<CommentDto> commentDtoList;
-=======
-    public Response<PostClickResDto,List<CommentInfoResDto>> getPostClick(@PathVariable Long postId) {
-        PostClickResDto postClickResDto;
-        List<CommentInfoResDto> commentInfoResDtoList;
->>>>>>> 9cbc71e96b678c71b7b422d4852e14c2515263a4
+
         try {
             postClickResDto = postService.getPostClick(postId);
             commentInfoResDtoList = postService.getCommentList(postId);
