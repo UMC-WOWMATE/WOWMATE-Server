@@ -2,6 +2,8 @@ package com.wowmate.server.user.service.impl;
 
 import com.wowmate.server.config.common.CommonResponse;
 import com.wowmate.server.config.security.JwtTokenProvider;
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.Gender;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.dto.SignInRequestDto;
@@ -88,10 +90,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SignInResultDto signIn(SignInRequestDto signInRequestDto) throws RuntimeException {
+    public SignInResultDto signIn(SignInRequestDto signInRequestDto) throws RuntimeException, BaseException {
 
         log.info("[getSignInResult] signDataHandler 로 회원 정보 요청");
-        User user = userRepository.findByEmail(signInRequestDto.getEmail());
+        User user = userRepository.findByEmail(signInRequestDto.getEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
 
         log.info("[getSignInResult] Email : {}", signInRequestDto.getEmail());
         log.info("[getSignInResult] 패스워드 비교 수행");

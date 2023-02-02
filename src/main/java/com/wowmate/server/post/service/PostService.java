@@ -228,7 +228,8 @@ public class PostService {
 
     public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto, User currentUser) throws BaseException {
 
-        User user = userRepository.findByEmail(currentUser.getUsername());
+        User user = userRepository.findByEmail(currentUser.getUsername())
+                .orElseThrow(() -> new BaseException(NOT_FOUND_USER));
 
         if(postRegisterReqDto.getPostTitle().isBlank()){
             throw new BaseException(NO_TITLE);

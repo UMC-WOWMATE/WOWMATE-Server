@@ -17,7 +17,8 @@ spring:
   jpa:
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+
         #hbm2ddl:
         # import_files: classpath:db/data.sql # DB ?? ????? ??
       #import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
@@ -28,7 +29,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:/db/data.sql
+
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:/db/data.sql
+
