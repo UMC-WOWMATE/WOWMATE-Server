@@ -1,5 +1,8 @@
 package com.wowmate.server.user.service.impl;
 
+import com.wowmate.server.response.BaseException;
+import com.wowmate.server.response.ResponseStatus;
+import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +23,18 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         log.info("[loadUserByUsername] loadUserByUsername 수행: username = {}", userEmail);
-        return userRepository.findByEmail(userEmail);
+
+        User user = null;
+
+        try {
+            user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
+        } catch (BaseException e) {
+
+            throw new RuntimeException(e);
+        }
+
+        return user;
     }
 
 }
