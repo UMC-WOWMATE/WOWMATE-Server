@@ -9,6 +9,7 @@ import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -80,7 +81,8 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    public Response<PostRegisterResDto, Object> registerPost(@RequestBody PostRegisterReqDto postRegisterReqDto, @AuthenticationPrincipal User user) {
+    public Response<PostRegisterResDto, Object> registerPost(@RequestBody PostRegisterReqDto postRegisterReqDto,@AuthenticationPrincipal User user) {
+
         try {
             if(postRegisterReqDto.getPostTitle()==null){
                 throw new BaseException(NO_TITLE);

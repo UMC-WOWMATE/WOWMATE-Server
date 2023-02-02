@@ -11,6 +11,7 @@ import com.wowmate.server.post.repository.PostRepository;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -165,14 +166,12 @@ public class PostService {
         return postInfoResDtoList;
     }
 
-    public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto,User currentUser) throws BaseException {
+    public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto, User currentUser) throws BaseException {
 
-        Optional<User> user = userRepository.findById(currentUser.getId());
+        User user = userRepository.findByEmail(currentUser.getUsername());
 
-        if(user.isEmpty())
-            throw new BaseException(NOT_EXIST_POST);
         Post post = postRepository.save(new Post(
-                user.get(),
+                user,
                 postRegisterReqDto.getPostTitle(),
                 postRegisterReqDto.getPostContext(),
                 postRegisterReqDto.getCategoryName(),
