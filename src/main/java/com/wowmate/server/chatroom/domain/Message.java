@@ -23,8 +23,6 @@ public class Message extends BaseEntity {
 
     private String senderEmail;
 
-    private String receiverEmail;
-
     private String content;
 
     @Enumerated(EnumType.STRING)

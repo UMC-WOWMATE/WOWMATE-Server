@@ -1,8 +1,10 @@
 package com.wowmate.server.chatroom.service;
 
 import com.wowmate.server.chatroom.domain.Chatroom;
+import com.wowmate.server.chatroom.domain.UserChatroom;
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
+import com.wowmate.server.chatroom.dto.GetMessageDto;
 import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.UserChatroomRepository;
@@ -45,19 +47,20 @@ public class ChatroomService {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        List<GetChatroomListDto> chatroomListDtos = chatroomRepository.findChatroomsByRequestUserEmail(user.getEmail())
+        List<GetChatroomListDto> chatroomListDtos = userChatroomRepository.findByUserEmail(user.getEmail())
                 .stream()
                 .map(
-                        chatroom ->
+                        userChatroom ->
                                 GetChatroomListDto.builder()
-                                        .postTitle(chatroom.getPost().getTitle())
+                                        .postTitle(userChatroom.getChatroom().getPost().getTitle())
+                                        .opponentUserImg(userChatroom.getOpponentUserImg())
                                         .lastMessage(
-                                                (chatroom.getMessages().isEmpty()) ?
-                                                null : (chatroom.getMessages().get(chatroom.getMessages().size() - 1).getContent())
+                                                (userChatroom.getChatroom().getMessages().isEmpty()) ?
+                                                null : (userChatroom.getChatroom().getMessages().get(userChatroom.getChatroom().getMessages().size() - 1).getContent())
                                         )
                                         .lastMessageDate(
-                                                (chatroom.getMessages().isEmpty()) ?
-                                                null : (chatroom.getMessages().get(chatroom.getMessages().size() - 1).getCreatedDate()
+                                                (userChatroom.getChatroom().getMessages().isEmpty()) ?
+                                                null : (userChatroom.getChatroom().getMessages().get(userChatroom.getChatroom().getMessages().size() - 1).getCreatedDate()
                                                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")))
                                         )
                                         .build() // 원래 로직에서는 메시지를 보내야 채팅방이 만들어지므로 null이 될리가 없음 만약 null이면 예외처리를 해야함
@@ -66,6 +69,7 @@ public class ChatroomService {
                 .collect(Collectors.toList());
 
         return chatroomListDtos;
+
     }
 
 
@@ -77,15 +81,25 @@ public class ChatroomService {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
+        UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
+
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
-                .postTitle(chatroom.getPost().getTitle())
-                .createDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
-                .messageList(chatroom.getMessages())
-                //.opponentImg(chatroom.getOpponentUserEmail())
-                .postCategory(chatroom.getPost().getCategory().getName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
+                .postTitle(chatroom.getChatroom().getPost().getTitle())
+                .createdDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
+                .messageList(
+                        chatroom.getChatroom().getMessages().stream()
+                        .map(
+                                message -> GetMessageDto.builder()
+                                        .senderEmail(message.getSenderEmail())
+                                        .content(message.getContent())
+                                        .sendTime(message.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")))
+                                        .build()
+                        ).collect(Collectors.toList())
+                )
+                .opponentImg(chatroom.getOpponentUserImg())
+                .postCategory(chatroom.getChatroom().getPost().getCategory().getName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
                 .build();
 
         return chatroomDto;
@@ -100,12 +114,13 @@ public class ChatroomService {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
 
-        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
+        UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
 
-        chatroomRepository.delete(chatroom);
+        userChatroomRepository.delete(chatroom);
 
         List<GetChatroomListDto> chatroomListDtos = getChatroomList(user);
+
         return chatroomListDtos;
 
     }
@@ -124,8 +139,28 @@ public class ChatroomService {
 
         chatroomRepository.save(chatroom);
 
-        GetChatroomDto getChatroomDto = getChatroom(chatroom.getUuid(), user);
+        UserChatroom requestUserChatroom = UserChatroom.builder()
+                .chatroom(chatroom)
+                .user(chatroom.getRequestUser())
+                .opponentUserEmail(chatroom.getPostUserEmail())
+                .opponentUserImg(chatroom.getPost().getUser().getImage())
+                .build();
 
+        UserChatroom postUserChatroom = UserChatroom.builder()
+                .chatroom(chatroom)
+                .user(chatroom.getPost().getUser())
+                .opponentUserEmail(chatroom.getRequestUser().getEmail())
+                .opponentUserImg(chatroom.getRequestUser().getImage())
+                .build();
+
+        userChatroomRepository.save(requestUserChatroom);
+        userChatroomRepository.save(postUserChatroom);
+
+        chatroom.getUserChatrooms().add(requestUserChatroom);
+        chatroom.getUserChatrooms().add(postUserChatroom);
+
+
+        GetChatroomDto getChatroomDto = this.getChatroom(messageDto.getChatroomUuid(), user);
         return getChatroomDto;
 
     }

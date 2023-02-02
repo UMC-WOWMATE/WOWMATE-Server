@@ -14,7 +14,7 @@ public class GetChatroomListDto {
 
     private String lastMessageDate;
 
-//    private String opponentUserImg;
+    private String opponentUserImg;
 
 
     // 이미지 포함 생성 메서드(날짜 가공 로직) 쓸 필요 있나?

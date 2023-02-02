@@ -1,5 +1,6 @@
 package com.wowmate.server.post.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wowmate.server.BaseEntity;
 import com.wowmate.server.comment.domain.Comment;
 import com.wowmate.server.user.domain.User;
