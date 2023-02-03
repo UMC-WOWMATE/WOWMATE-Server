@@ -77,9 +77,9 @@ public class ChatroomService {
     @Transactional(readOnly = true)
     public GetChatroomDto getChatroom(String roomUuid, User user) throws BaseException {
 
-//        if (user == null) {
-//            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-//        }
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
 
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));

@@ -42,7 +42,7 @@ public enum ResponseStatus {
 
 
     // 채팅 예외
-    NO_CHATROOM(false, 401, "채팅방이 존재하지 않습니다.");
+    NO_CHATROOM(false, 404, "채팅방이 존재하지 않습니다.");
 
 
 
