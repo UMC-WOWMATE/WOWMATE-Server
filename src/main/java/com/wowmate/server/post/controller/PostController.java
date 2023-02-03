@@ -6,10 +6,8 @@ import com.wowmate.server.response.BaseException;
 import com.wowmate.server.post.service.PostService;
 import com.wowmate.server.response.Response;
 import com.wowmate.server.user.domain.User;
-import com.wowmate.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -144,6 +142,72 @@ public class PostController {
     public Response<Object, Object> deletePost(@PathVariable Long postId,@AuthenticationPrincipal User user) {
         try {
             postService.deletePost(postId,user);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @PostMapping("/posts/{postId}/like")
+    public Response<Object, Object> registerPostLike(@PathVariable Long postId) {
+        try {
+            postService.registerPostLike(postId);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @DeleteMapping("/posts/{postId}/like")
+    public Response<Object, Object> deletePostLike(@PathVariable Long postId) {
+        try {
+            postService.deletePostLike(postId);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @PostMapping("/posts/{postId}/{commentId}/like")
+    public Response<Object, Object> registerCommentLike(@PathVariable Long postId, @PathVariable Long commentId) {
+        try {
+            postService.registerCommentLike(postId, commentId);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @DeleteMapping("/posts/{postId}/{commentId}/like")
+    public Response<Object, Object> deleteCommentLike(@PathVariable Long postId, @PathVariable Long commentId) {
+        try {
+            postService.deleteCommentLike(postId, commentId);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @PostMapping("/comments/{commentId}/{commentReplyId}/like")
+    public Response<Object, Object> registerCommentReplyLike(@PathVariable Long commentId, @PathVariable Long commentReplyId) {
+        try {
+            postService.registerCommentReplyLike(commentId, commentReplyId);
+            return new Response<>(SUCCESS);
+        }
+        catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+
+    @DeleteMapping("/comments/{commentId}/{commentReplyId}/like")
+    public Response<Object, Object> deleteCommentReplyLike(@PathVariable Long commentId, @PathVariable Long commentReplyId) {
+        try {
+            postService.deleteCommentReplyLike(commentId, commentReplyId);
             return new Response<>(SUCCESS);
         }
         catch (BaseException e) {
