@@ -34,7 +34,7 @@ public enum ResponseStatus {
     NOT_EXIST_COMMENT(false, 380, "존재하지 않는 댓글입니다."),
     NOT_EXIST_COMMENTREPLY(false, 380, "존재하지 않는 대댓글입니다."),
 
-
+    NO_LIKE_NUMBER(false, 390, "좋아요가 없습니다."),
     //400 ~ USER ERROR
     //로그인 예외 처리 만들 때, 여기 만들면 됨!
 

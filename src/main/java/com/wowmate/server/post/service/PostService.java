@@ -257,6 +257,20 @@ public class PostService {
         return postRegisterResDto;
     }
 
+    public void deletePost(Long postId, User currentUser) throws BaseException {
+        Optional<Post> post = postRepository.findById(postId);
+        Optional<User> user = userRepository.findByEmail(currentUser.getUsername());
+        if(!post.get().getUser().getId().equals(user.get().getId())){
+            throw new BaseException(NOT_WRITER);
+        }
+        if(post.isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
+        postRepository.deleteById(postId);
+
+        throw new BaseException(SUCCESS);
+    }
+
     public CommentRegisterResDto registerComment(CommentRegisterReqDto commentRegisterReqDto,Long postId,User currentUser) throws BaseException{
         Optional<Post> post = postRepository.findById(postId);
         Optional<User> user = userRepository.findById(currentUser.getId());
@@ -274,6 +288,28 @@ public class PostService {
         CommentRegisterResDto commentRegisterResDto = new CommentRegisterResDto(comment.getId());
 
         return commentRegisterResDto;
+    }
+
+    public void deleteComment(Long postId,Long commentId, User currentUser) throws BaseException {
+        Optional<Post> post = postRepository.findById(postId);
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        Optional<User> user = userRepository.findByEmail(currentUser.getUsername());
+
+        if(!comment.get().getUser().getId().equals(user.get().getId())){
+            throw new BaseException(NOT_WRITER);
+        }
+        if(post.isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
+        if(comment.isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        if(comment.get().getPost().getId() != postId) {
+            throw new BaseException(NO_RELATED_COMMENT);
+        }
+
+        commentRepository.deleteById(commentId);
+        throw new BaseException(SUCCESS);
     }
 
     public CommentReplyRegisterResDto registerCommentReply(CommentReplyRegisterReqDto commentReplyRegisterReqDto,Long commentId,User currentUser) throws BaseException {
@@ -297,45 +333,108 @@ public class PostService {
     }
 
     public void deleteCommentReply(Long commentId,Long commentReplyId,User currentUser) throws BaseException {
-        //예외처리 해야댐  예를들어 지우려는 데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
-        if(commentRepository.findById(commentId).isEmpty()) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        Optional<CommentReply> commentReply = commentReplyRepository.findById(commentReplyId);
+        Optional<User> user = userRepository.findByEmail(currentUser.getUsername());
+
+        if(!commentReply.get().getUser().getId().equals(user.get().getId())){
+            throw new BaseException(NOT_WRITER);
+        }
+        if(comment.isEmpty()) {
             throw new BaseException(NOT_EXIST_COMMENT);
         }
-        if(commentReplyRepository.findById(commentReplyId).isEmpty()) {
+        if(commentReply.isEmpty()) {
             throw new BaseException(NOT_EXIST_COMMENTREPLY);
         }
-        if(commentReplyRepository.findById(commentReplyId).get().getComment().getId() != commentId) {
+        if(commentReply.get().getComment().getId() != commentId) {
             throw new BaseException(NO_RELATED_COMMENTREPLY);
         }
         commentReplyRepository.deleteById(commentReplyId);
         throw new BaseException(SUCCESS);
     }
 
-    public void deleteComment(Long postId,Long commentId, User currentUser) throws BaseException {
-        //예외처리 해야댐  예를들어 지우려는데이터 없을때/userId가 같지 않을 때 등 생각좀 ㅋ
-        if(postRepository.findById(postId).isEmpty()) {
+    public void registerPostLike(Long postId) throws BaseException {
+        Optional<Post> post = postRepository.findById(postId);
+        if(post.isEmpty()) {
             throw new BaseException(NOT_EXIST_POST);
         }
-        if(commentRepository.findById(commentId).isEmpty()) {
+        int like = post.get().getLikeNumber();
+        post.get().setLikeNumber(++like);
+
+    }
+
+    public void deletePostLike(Long postId) throws BaseException {
+        Optional<Post> post = postRepository.findById(postId);
+        if(post.isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
+        int like = post.get().getLikeNumber();
+        if(like <= 0) {
+            throw new BaseException(NO_LIKE_NUMBER);
+        }
+        post.get().setLikeNumber(--like);
+    }
+
+
+    public void registerCommentLike(Long postId, Long commentId) throws BaseException {
+        Optional<Post> post = postRepository.findById(postId);
+        Optional<Comment> comment = commentRepository.findById(commentId);
+
+        if(post.isEmpty()) {
+            throw new BaseException(NOT_EXIST_POST);
+        }
+        if(comment.isEmpty()) {
             throw new BaseException(NOT_EXIST_COMMENT);
         }
-        if(commentRepository.findById(commentId).get().getPost().getId() != postId) {
-            throw new BaseException(NO_RELATED_COMMENT);
-        }
-
-        commentRepository.deleteById(commentId);
-        throw new BaseException(SUCCESS);
+        int like = comment.get().getCommentLikeNumber();
+        comment.get().setCommentLikeNumber(++like);
     }
 
-    public void deletePost(Long postId,User currentUser) throws BaseException {
+    public void deleteCommentLike(Long postId, Long commentId) throws BaseException {
+        Optional<Post> post = postRepository.findById(postId);
+        Optional<Comment> comment = commentRepository.findById(commentId);
 
-        if(postRepository.findById(postId).isEmpty()) {
+        if(post.isEmpty()) {
             throw new BaseException(NOT_EXIST_POST);
         }
-
-        postRepository.deleteById(postId);
-
-        throw new BaseException(SUCCESS);
+        if(comment.isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        int like = comment.get().getCommentLikeNumber();
+        if(like <= 0) {
+            throw new BaseException(NO_LIKE_NUMBER);
+        }
+        comment.get().setCommentLikeNumber(--like);
     }
 
+    public void registerCommentReplyLike(Long commentId, Long commentReplyId) throws BaseException {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        Optional<CommentReply> commentReply = commentReplyRepository.findById(commentReplyId);
+
+        if(comment.isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        if(commentReply.isEmpty()) {
+            throw new BaseException((NOT_EXIST_COMMENTREPLY));
+        }
+        int like = commentReply.get().getCommentReplyLikeNumber();
+        commentReply.get().setCommentReplyLikeNumber(++like);
+    }
+
+    public void deleteCommentReplyLike(Long commentId, Long commentReplyId) throws BaseException {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        Optional<CommentReply> commentReply = commentReplyRepository.findById(commentReplyId);
+
+        if(comment.isEmpty()) {
+            throw new BaseException(NOT_EXIST_COMMENT);
+        }
+        if(commentReply.isEmpty()) {
+            throw new BaseException((NOT_EXIST_COMMENTREPLY));
+        }
+        int like = commentReply.get().getCommentReplyLikeNumber();
+        if(like <= 0) {
+            throw new BaseException(NO_LIKE_NUMBER);
+        }
+        commentReply.get().setCommentReplyLikeNumber(--like);
+    }
 }
