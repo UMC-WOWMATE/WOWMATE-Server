@@ -38,10 +38,6 @@ public class MessageController {
     public Response<Object, Object> sendMessage(@RequestBody MessageDto messageDto) {
 
         try {
-            if (messageDto.getMessageType().equals(MessageType.ENTER)) {
-                chatroomService.createChatroom(messageDto);
-                log.info("채팅방 생성: {}", messageDto.getChatroomUuid());
-            }
 
             messageService.sendMessage(messageDto);
             return new Response<>(ResponseStatus.SUCCESS); // 이렇게 말고 다른 방법?

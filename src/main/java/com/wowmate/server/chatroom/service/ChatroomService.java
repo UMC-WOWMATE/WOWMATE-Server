@@ -5,7 +5,6 @@ import com.wowmate.server.chatroom.domain.UserChatroom;
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
 import com.wowmate.server.chatroom.dto.GetMessageDto;
-import com.wowmate.server.chatroom.dto.MessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.UserChatroomRepository;
 import com.wowmate.server.post.domain.Post;
@@ -98,6 +97,7 @@ public class ChatroomService {
                                                 .build()
                                 ).collect(Collectors.toList())
                 )
+                .opponentEmail(chatroom.getOpponentUserEmail())
                 .opponentImg(chatroom.getOpponentUserImg())
                 .postCategory(chatroom.getChatroom().getPost().getCategoryName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
                 .build();
@@ -127,15 +127,25 @@ public class ChatroomService {
 
 
     // 채팅방 생성
-    public GetChatroomDto createChatroom(MessageDto messageDto) throws BaseException {
+    public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
 
-        User user = userRepository.findByEmail(messageDto.getSenderEmail())
-                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
 
-        Post post = postRepository.findById(messageDto.getPostId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
-        Chatroom chatroom = new Chatroom(post, user);
+        // 생성된 채팅방이 없으면 createChatroom 로직 실행 x
+        // 같은 유저가 채팅 중복 생성을 하면 기존 채팅방 반환
+        Chatroom chatroom = checkExistChatroom(postId, user);
+
+        if(chatroom != null) {
+            GetChatroomDto getChatroomDto = getChatroom(chatroom.getUuid(), user);
+            return getChatroomDto;
+        }
+
+        chatroom = new Chatroom(post, user);
 
         chatroomRepository.save(chatroom);
 
@@ -160,13 +170,29 @@ public class ChatroomService {
         chatroom.getUserChatrooms().add(postUserChatroom);
 
 
-        GetChatroomDto getChatroomDto = this.getChatroom(messageDto.getChatroomUuid(), user);
+        GetChatroomDto getChatroomDto = this.getChatroom(chatroom.getUuid(), user);
+
         return getChatroomDto;
 
     }
 
+    // 자기가 쓴 글에 채팅 안 만들어져야함 -> 이거는 클라에서 해줄 수 있나?
 
-    // post에 같은 유저가 채팅 중복 생성 금지
-    // 자기가 쓴 글에 채팅 안 만들어져야함
+
+    private Chatroom checkExistChatroom(Long postId, User user) {
+
+        List<Chatroom> chatrooms = chatroomRepository.findByPostId(postId);
+        Chatroom findChatroom = null;
+
+        for (Chatroom chatroom : chatrooms) {
+            if(chatroom.getRequestUser().equals(user)) {
+                findChatroom = chatroom;
+                break;
+            }
+        }
+
+        return findChatroom;
+    }
+
 
 }

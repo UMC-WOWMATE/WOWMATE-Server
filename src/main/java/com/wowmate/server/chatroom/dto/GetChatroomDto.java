@@ -14,6 +14,7 @@ public class GetChatroomDto {
     private String postTitle;
     private String postCategory;
     private String createdDate;
+    private String opponentEmail;
     private String opponentImg;
     private List<GetMessageDto> messageList;
 

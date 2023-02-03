@@ -45,8 +45,6 @@ public enum ResponseStatus {
     NO_CHATROOM(false, 404, "채팅방이 존재하지 않습니다.");
 
 
-
-
     private final boolean isSuccess;
     private final int code;
     private final String message;
