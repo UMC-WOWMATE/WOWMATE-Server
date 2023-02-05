@@ -78,9 +78,10 @@ public class ChatroomController {
      // 채팅을 보내야만 채팅방이 만들어지게 구현??
     @Operation(tags = "Chatroom", description = "채팅방 생성")
     @PostMapping(value = "/chat/create")
-    public Response<GetChatroomDto, Object> createChatroom(Long postId, User user) {
+    public Response<GetChatroomDto, Object> createChatroom(@RequestParam Long postId, @AuthenticationPrincipal User user) {
 
         try {
+            log.info("postId: {}", postId);
             GetChatroomDto chatroomDto = chatroomService.createChatroom(postId, user);
             return new Response<>(chatroomDto);
         } catch (BaseException e) {

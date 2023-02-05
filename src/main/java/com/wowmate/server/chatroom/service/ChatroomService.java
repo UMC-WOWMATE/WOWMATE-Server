@@ -33,8 +33,6 @@ public class ChatroomService {
 
     private final UserChatroomRepository userChatroomRepository;
 
-    private final UserRepository userRepository;
-
     private final PostRepository postRepository;
 
 
@@ -59,8 +57,7 @@ public class ChatroomService {
                                         )
                                         .lastMessageDate(
                                                 (userChatroom.getChatroom().getMessages().isEmpty()) ?
-                                                        null : (userChatroom.getChatroom().getMessages().get(userChatroom.getChatroom().getMessages().size() - 1).getCreatedDate()
-                                                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")))
+                                                        null : (userChatroom.getChatroom().getMessages().get(userChatroom.getChatroom().getMessages().size() - 1).getCreatedDate())
                                         )
                                         .build() // 원래 로직에서는 메시지를 보내야 채팅방이 만들어지므로 null이 될리가 없음 만약 null이면 예외처리를 해야함
                 )
@@ -86,20 +83,20 @@ public class ChatroomService {
 
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
                 .postTitle(chatroom.getChatroom().getPost().getTitle())
-                .createdDate(chatroom.getCreatedDate().format(DateTimeFormatter.ofPattern("채팅 생성일 yyyy.MM.dd")))
+                .createdDate(chatroom.getCreatedDate())
                 .messageList(
                         chatroom.getChatroom().getMessages().stream()
                                 .map(
                                         message -> GetMessageDto.builder()
                                                 .senderEmail(message.getSenderEmail())
                                                 .content(message.getContent())
-                                                .sendTime(message.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")))
+                                                .sendTime(message.getCreatedDate())
                                                 .build()
                                 ).collect(Collectors.toList())
                 )
                 .opponentEmail(chatroom.getOpponentUserEmail())
                 .opponentImg(chatroom.getOpponentUserImg())
-                .postCategory(chatroom.getChatroom().getPost().getCategoryName()) // 추후 post에서 바로 category name 가져오는 걸로 변경
+                .postCategory(chatroom.getChatroom().getPost().getCategoryName())
                 .build();
 
         return chatroomDto;
@@ -129,6 +126,7 @@ public class ChatroomService {
     // 채팅방 생성
     public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
 
+        log.info("user: {}", user.getBirth());
         if (user == null) {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
@@ -149,6 +147,8 @@ public class ChatroomService {
 
         chatroomRepository.save(chatroom);
 
+        log.info("new chatroom: " + chatroom.getId());
+
         UserChatroom requestUserChatroom = UserChatroom.builder()
                 .chatroom(chatroom)
                 .user(chatroom.getRequestUser())
@@ -166,17 +166,36 @@ public class ChatroomService {
         userChatroomRepository.save(requestUserChatroom);
         userChatroomRepository.save(postUserChatroom);
 
+        log.info("new requestUserChatroom:{}", requestUserChatroom.getId());
+        log.info("new requestUserChatroom:{}", postUserChatroom.getId());
+
         chatroom.getUserChatrooms().add(requestUserChatroom);
         chatroom.getUserChatrooms().add(postUserChatroom);
 
+        log.info("userChatroomList in chatroom: {}", chatroom.getUserChatrooms().get(0).getId());
+        log.info("userChatroomList in chatroom: {}", chatroom.getUserChatrooms().get(1).getId());
 
-        GetChatroomDto getChatroomDto = this.getChatroom(chatroom.getUuid(), user);
+        GetChatroomDto chatroomDto = GetChatroomDto.builder()
+                .postTitle(chatroom.getPost().getTitle())
+                .createdDate(requestUserChatroom.getCreatedDate())
+                .messageList(
+                        chatroom.getMessages().stream()
+                                .map(
+                                        message -> GetMessageDto.builder()
+                                                .senderEmail(message.getSenderEmail())
+                                                .content(message.getContent())
+                                                .sendTime(message.getCreatedDate())
+                                                .build()
+                                ).collect(Collectors.toList())
+                )
+                .opponentEmail(requestUserChatroom.getOpponentUserEmail())
+                .opponentImg(requestUserChatroom.getOpponentUserImg())
+                .postCategory(chatroom.getPost().getCategoryName())
+                .build();
 
-        return getChatroomDto;
+        return chatroomDto;
 
     }
-
-    // 자기가 쓴 글에 채팅 안 만들어져야함 -> 이거는 클라에서 해줄 수 있나?
 
 
     private Chatroom checkExistChatroom(Long postId, User user) {

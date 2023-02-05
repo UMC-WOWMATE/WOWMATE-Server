@@ -5,6 +5,7 @@ import com.wowmate.server.post.domain.Post;
 import com.wowmate.server.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @Getter
+@ToString
 public class Chatroom extends BaseEntity {
 
     @Id

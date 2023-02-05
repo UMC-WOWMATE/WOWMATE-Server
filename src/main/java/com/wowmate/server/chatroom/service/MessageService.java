@@ -29,7 +29,7 @@ public class MessageService {
     private final SimpMessagingTemplate template;
     private final MessageRepository messageRepository;
     private final ChatroomRepository chatroomRepository;
-
+    
     private final UserChatroomRepository userChatroomRepository;
     private final UserRepository userRepository;
 
@@ -40,23 +40,12 @@ public class MessageService {
 
         Chatroom chatroom = chatroomRepository.findByUuid(messageDto.getChatroomUuid())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
-
+        
         UserChatroom userChatroom = checkExitUserChatroom(messageDto.getChatroomUuid(), messageDto.getReceiverEmail());
 
         // 상대 유저가 채팅방을 삭제했으면 다시 만들어줌
         if(userChatroom == null) {
-            User receiveUser = userRepository.findByEmail(messageDto.getReceiverEmail())
-                    .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
-
-            UserChatroom requestUserChatroom = UserChatroom.builder()
-                    .chatroom(chatroom)
-                    .user(receiveUser)
-                    .opponentUserEmail(messageDto.getSenderEmail())
-                    .opponentUserImg(chatroom.getPost().getUser().getImage())
-                    .build();
-
-            userChatroomRepository.save(requestUserChatroom);
-            chatroom.getUserChatrooms().add(requestUserChatroom);
+            createUserChatroom(messageDto, chatroom);
         }
 
         Message message = Message.builder()
@@ -104,7 +93,7 @@ public class MessageService {
     private UserChatroom checkExitUserChatroom(String roomUuid, String email) {
 
         List<UserChatroom> chatrooms = userChatroomRepository.findByUserEmail(email);
-
+        
         UserChatroom findChatroom = null;
 
         for (UserChatroom chatroom : chatrooms) {
@@ -115,15 +104,22 @@ public class MessageService {
         }
 
         return findChatroom;
-
+        
     }
 
-    private void createUserChatroom(Chatroom chatroom, MessageDto messageDto) {
+    private void createUserChatroom(MessageDto messageDto, Chatroom chatroom) throws BaseException {
+        User receiveUser = userRepository.findByEmail(messageDto.getReceiverEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
 
+        UserChatroom requestUserChatroom = UserChatroom.builder()
+                .chatroom(chatroom)
+                .user(receiveUser)
+                .opponentUserEmail(messageDto.getSenderEmail())
+                .opponentUserImg(chatroom.getPost().getUser().getImage())
+                .build();
 
-
-
-
+        userChatroomRepository.save(requestUserChatroom);
+        chatroom.getUserChatrooms().add(requestUserChatroom);
     }
-
+    
 }
