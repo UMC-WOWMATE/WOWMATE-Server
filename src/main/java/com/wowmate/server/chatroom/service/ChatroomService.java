@@ -12,13 +12,12 @@ import com.wowmate.server.post.repository.PostRepository;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
-import com.wowmate.server.user.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +60,7 @@ public class ChatroomService {
                                         )
                                         .build() // 원래 로직에서는 메시지를 보내야 채팅방이 만들어지므로 null이 될리가 없음 만약 null이면 예외처리를 해야함
                 )
-                .sorted(Comparator.comparing(GetChatroomListDto::getLastMessageDate))
+                //.sorted(Comparator.comparing(GetChatroomListDto::getLastMessageDate).reversed()) // 메시지 날짜가 null이어서 주석표시
                 .collect(Collectors.toList());
 
         return chatroomListDtos;
@@ -139,6 +138,7 @@ public class ChatroomService {
         Chatroom chatroom = checkExistChatroom(postId, user);
 
         if(chatroom != null) {
+            log.info("채팅 중복 생성 불가, 기존 채팅방 반환");
             GetChatroomDto getChatroomDto = getChatroom(chatroom.getUuid(), user);
             return getChatroomDto;
         }
@@ -146,8 +146,6 @@ public class ChatroomService {
         chatroom = new Chatroom(post, user);
 
         chatroomRepository.save(chatroom);
-
-        log.info("new chatroom: " + chatroom.getId());
 
         UserChatroom requestUserChatroom = UserChatroom.builder()
                 .chatroom(chatroom)
@@ -166,14 +164,8 @@ public class ChatroomService {
         userChatroomRepository.save(requestUserChatroom);
         userChatroomRepository.save(postUserChatroom);
 
-        log.info("new requestUserChatroom:{}", requestUserChatroom.getId());
-        log.info("new requestUserChatroom:{}", postUserChatroom.getId());
-
         chatroom.getUserChatrooms().add(requestUserChatroom);
         chatroom.getUserChatrooms().add(postUserChatroom);
-
-        log.info("userChatroomList in chatroom: {}", chatroom.getUserChatrooms().get(0).getId());
-        log.info("userChatroomList in chatroom: {}", chatroom.getUserChatrooms().get(1).getId());
 
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
                 .postTitle(chatroom.getPost().getTitle())
@@ -204,7 +196,7 @@ public class ChatroomService {
         Chatroom findChatroom = null;
 
         for (Chatroom chatroom : chatrooms) {
-            if(chatroom.getRequestUser().equals(user)) {
+            if(chatroom.getRequestUser().getId().equals(user.getId())) {
                 findChatroom = chatroom;
                 break;
             }
@@ -212,6 +204,5 @@ public class ChatroomService {
 
         return findChatroom;
     }
-
 
 }
