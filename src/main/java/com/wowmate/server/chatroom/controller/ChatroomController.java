@@ -29,9 +29,8 @@ public class ChatroomController {
     public Response<List<GetChatroomListDto>, Object> getChatroomList(@AuthenticationPrincipal User user) {
 
         try {
-            log.info("현재 로그인한 유저: {}", user.getEmail());
-            List<GetChatroomListDto> chatroomListDto = chatroomService.getChatroomList(user);
 
+            List<GetChatroomListDto> chatroomListDto = chatroomService.getChatroomList(user);
             return new Response<>(chatroomListDto);
 
         } catch(BaseException e) {
@@ -89,5 +88,9 @@ public class ChatroomController {
         }
 
     }
+    
+
+
+
 
 }
