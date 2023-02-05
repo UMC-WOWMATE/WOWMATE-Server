@@ -2,7 +2,7 @@ package com.wowmate.server.config.common;
 
 public enum CommonResponse {
 
-    SUCCESS(0, "Success"), FAIL(-1, "Fail");
+    SUCCESS(200, "SUCCESS!"), FAIL(403, "Fail"), DUPLICATION(500, "이미 가입된 회원입니다.");
 
     private final int code;
     private final String msg;

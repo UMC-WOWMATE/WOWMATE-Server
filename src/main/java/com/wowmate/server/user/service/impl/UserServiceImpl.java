@@ -2,6 +2,7 @@ package com.wowmate.server.user.service.impl;
 
 import com.wowmate.server.config.common.CommonResponse;
 import com.wowmate.server.config.security.JwtTokenProvider;
+import com.wowmate.server.response.BaseException;
 import com.wowmate.server.user.domain.Gender;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.dto.SignInRequestDto;
@@ -37,11 +38,19 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public SignUpResultDto signUp(SignUpRequestDto signUpRequestDto)
-//            String email, String password, String univ, Long phoneNumber, LocalDate birth, Gender gender, String role)
-    {
+    public SignUpResultDto signUp(SignUpRequestDto signUpRequestDto) {
         log.info("[getSignUpResult] 회원 가입 정보 전달");
+
+        SignUpResultDto signUpResultDto = new SignUpResultDto();
+
+        if (userRepository.findByEmail(signUpRequestDto.getEmail()) != null){
+            log.info("[checkDuplicateSignUp] 중복 회원 가입");
+            setDuplicateResult(signUpResultDto);
+            return signUpResultDto;
+        }
+
         User user;
+
         if (signUpRequestDto.getRole().equalsIgnoreCase("admin")) {
             user = User.builder()
                     .email(signUpRequestDto.getEmail())
@@ -74,7 +83,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = userRepository.save(user);
-        SignUpResultDto signUpResultDto = new SignUpResultDto();
+
         log.info("[getSignUpResult] userEntity 값이 들어왔는지 확인 후 결과값 주입");
 
         if (!savedUser.getEmail().isEmpty()) {
@@ -112,16 +121,22 @@ public class UserServiceImpl implements UserService {
 
     // 결과 모델에 api 요청 성공 데이터를 세팅해주는 메소드
     private void setSuccessResult(SignUpResultDto result) {
-        result.setSuccess(true);
+        result.setIsSuccess(true);
         result.setCode(CommonResponse.SUCCESS.getCode());
-        result.setMsg(CommonResponse.SUCCESS.getMsg());
+        result.setMessage(CommonResponse.SUCCESS.getMsg());
     }
 
     // 결과 모델에 api 요청 실패 데이터를 세팅해주는 메소드
     private void setFailResult(SignUpResultDto result) {
-        result.setSuccess(false);
+        result.setIsSuccess(false);
         result.setCode(CommonResponse.FAIL.getCode());
-        result.setMsg(CommonResponse.FAIL.getMsg());
+        result.setMessage(CommonResponse.FAIL.getMsg());
+    }
+
+    private void setDuplicateResult(SignUpResultDto result) {
+        result.setIsSuccess(false);
+        result.setCode(CommonResponse.DUPLICATION.getCode());
+        result.setMessage(CommonResponse.DUPLICATION.getMsg());
     }
 
     private String phone_format(String number) {

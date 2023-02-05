@@ -1,8 +1,11 @@
 package com.wowmate.server.user.controller;
 
+import com.wowmate.server.post.domain.Post;
+import com.wowmate.server.post.dto.PostInfoResDto;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.Response;
 import com.wowmate.server.user.domain.University;
+import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.dto.*;
 import com.wowmate.server.user.repository.UniversityRepository;
 import com.wowmate.server.user.service.UserService;
@@ -13,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,7 +26,6 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sign-api")
 public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -57,12 +60,33 @@ public class UserController {
 
     @GetMapping(value = "/univ")
     public List<University> getUnivList() {
-            log.info("true");
+            log.info("학교별 도메인 출력");
             List<University> UnivList = universityRepository.findAll();
             return UnivList;
-
     }
 
+    @GetMapping(value = "/myposts")
+    public List<PostInfoResDto> getMyPosts(@AuthenticationPrincipal User user) {
+        log.info("내가 쓴 글 목록 반환");
+        List<Post> MyPosts = user.getPostList();
+        List<PostInfoResDto> MyPostsInfo = new ArrayList<>();
+        for (Post p : MyPosts) {
+            MyPostsInfo.add(new PostInfoResDto(
+                            p.getTitle(),
+                            p.getCategoryName(),
+                            p.getTag1(),
+                            p.getTag2(),
+                            p.getTag3(),
+                            p.getTag4(),
+                            p.getTag5(),
+                            p.getLikeNumber(),
+                            p.getUser().getUniv(),
+                            p.getCreatedBy()
+                    )
+            );
+        }
+        return MyPostsInfo;
+    }
     @GetMapping(value = "/exception")
     public void exceptionResponse() throws RuntimeException {
         throw new RuntimeException("접근이 금지되었습니다.");
@@ -76,9 +100,9 @@ public class UserController {
         log.error("ExceptionHandler 호출, {}, {}", e.getCause(), e.getMessage());
 
         Map<String, String> map = new HashMap<>();
-        map.put("error type", httpStatus.getReasonPhrase());
-        map.put("code", "400");
-		map.put("message", "에러 발생");
+        map.put("isSuccess", "false");
+		map.put("message", "이메일/비밀번호를 확인해주세요");
+        map.put("code", "401");
         return new ResponseEntity<>(map, headers, httpStatus);
     }
 }

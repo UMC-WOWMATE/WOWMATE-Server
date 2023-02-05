@@ -2,6 +2,8 @@ package com.wowmate.server.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wowmate.server.BaseEntity;
+import com.wowmate.server.comment.domain.Comment;
+import com.wowmate.server.post.domain.Post;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -65,6 +67,9 @@ public class User extends BaseEntity implements UserDetails{
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> PostList = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
