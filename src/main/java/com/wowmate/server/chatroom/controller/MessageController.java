@@ -41,22 +41,11 @@ public class MessageController {
             return new Response<>(ResponseStatus.SUCCESS); // 이렇게 말고 다른 방법?
 
         } catch (BaseException e) {
+
             return new Response<>(e.getResponseStatus());
+
         }
 
     }
-
-//    @Operation(tags = "Message", description = "매칭 수락")
-//    @MessageMapping(value = "/chat/match/")
-//    public Response<Object, Object> matchRespond(@AuthenticationPrincipal User user, @RequestBody String roomUuid) {
-//
-//        try {
-//            messageService.matchRespond(user, roomUuid);
-//            return new Response<>(ResponseStatus.SUCCESS);
-//        } catch (BaseException e) {
-//            return new Response<>(e.getResponseStatus());
-//        }
-//
-//    }
 
 }

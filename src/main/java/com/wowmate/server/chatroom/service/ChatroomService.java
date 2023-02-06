@@ -143,28 +143,9 @@ public class ChatroomService {
         }
 
         chatroom = new Chatroom(post, user);
-
         chatroomRepository.save(chatroom);
 
-        UserChatroom requestUserChatroom = UserChatroom.builder()
-                .chatroom(chatroom)
-                .user(chatroom.getRequestUser())
-                .opponentUserEmail(chatroom.getPostUserEmail())
-                .opponentUserImg(chatroom.getPost().getUser().getImage())
-                .build();
-
-        UserChatroom postUserChatroom = UserChatroom.builder()
-                .chatroom(chatroom)
-                .user(chatroom.getPost().getUser())
-                .opponentUserEmail(chatroom.getRequestUser().getEmail())
-                .opponentUserImg(chatroom.getRequestUser().getImage())
-                .build();
-
-        userChatroomRepository.save(requestUserChatroom);
-        userChatroomRepository.save(postUserChatroom);
-
-        chatroom.getUserChatrooms().add(requestUserChatroom);
-        chatroom.getUserChatrooms().add(postUserChatroom);
+        UserChatroom requestUserChatroom = createUserChatroom(chatroom);
 
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
                 .postTitle(chatroom.getPost().getTitle())
@@ -202,5 +183,34 @@ public class ChatroomService {
 
         return findChatroom;
     }
+
+    // 유저 채팅방 2개 생성 후 요청 사용자 채팅방 반환
+    private UserChatroom createUserChatroom(Chatroom chatroom) {
+
+        UserChatroom postUserChatroom = UserChatroom.builder()
+                .chatroom(chatroom)
+                .user(chatroom.getPost().getUser())
+                .opponentUserEmail(chatroom.getRequestUser().getEmail())
+                .opponentUserImg(chatroom.getRequestUser().getImage())
+                .build();
+
+        userChatroomRepository.save(postUserChatroom);
+        chatroom.getUserChatrooms().add(postUserChatroom);
+
+        UserChatroom requestUserChatroom = UserChatroom.builder()
+                .chatroom(chatroom)
+                .user(chatroom.getRequestUser())
+                .opponentUserEmail(chatroom.getPostUserEmail())
+                .opponentUserImg(chatroom.getPost().getUser().getImage())
+                .build();
+
+        userChatroomRepository.save(requestUserChatroom);
+        chatroom.getUserChatrooms().add(requestUserChatroom);
+
+        return requestUserChatroom;
+
+    }
+
+
 
 }
