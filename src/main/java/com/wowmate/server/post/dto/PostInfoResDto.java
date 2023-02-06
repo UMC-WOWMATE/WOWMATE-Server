@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class PostInfoResDto {
+    private Long postId;
     private String postTitle;
     private String categoryName;
     private String tag1;
