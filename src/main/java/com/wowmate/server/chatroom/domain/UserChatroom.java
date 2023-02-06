@@ -2,10 +2,7 @@ package com.wowmate.server.chatroom.domain;
 
 import com.wowmate.server.BaseEntity;
 import com.wowmate.server.user.domain.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class UserChatroom extends BaseEntity {
 
     @Id
