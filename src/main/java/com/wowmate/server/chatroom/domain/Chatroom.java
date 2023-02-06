@@ -5,7 +5,6 @@ import com.wowmate.server.post.domain.Post;
 import com.wowmate.server.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @Getter
-@ToString
 public class Chatroom extends BaseEntity {
 
     @Id
@@ -40,26 +38,14 @@ public class Chatroom extends BaseEntity {
     @OneToMany(mappedBy = "chatroom")
     private List<UserChatroom> userChatrooms = new ArrayList<>();
 
-
-    @Enumerated(EnumType.STRING)
-    private MatchType matchType;
-
     private String postUserEmail;
 
-
-    //== 생성자 ==//
+    //== 연관 관계 메서드==//
     public Chatroom(Post post, User requestUser) {
-
         this.post = post;
         this.requestUser = requestUser;
         this.postUserEmail = post.getUser().getEmail();
         this.uuid = UUID.randomUUID().toString();
-        this.matchType = MatchType.YET;
-
-    }
-
-    public void setMatchType(MatchType matchType) {
-        this.matchType = matchType;
     }
 
 }
