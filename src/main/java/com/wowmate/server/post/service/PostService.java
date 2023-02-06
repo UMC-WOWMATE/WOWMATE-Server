@@ -1,4 +1,5 @@
 package com.wowmate.server.post.service;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.wowmate.server.comment.domain.Comment;
 import com.wowmate.server.comment.domain.CommentReply;
 import com.wowmate.server.comment.dto.*;
@@ -47,40 +48,27 @@ public class PostService {
         for (Post p : postList) {
             if(p.getMember() == 0) {
                 postInfoResDtoList.add(new PostInfoResDto(
-                                p.getTitle(),
-                                p.getCategoryName(),
-                                p.getTag1(),
-                                p.getTag2(),
-                                p.getTag3(),
-                                p.getTag4(),
-                                p.getTag5(),
-                                p.getLikeNumber(),
-                                p.getUser().getUniv(),
-                                "무관",
-                                p.getCreatedDate()
-                        )
-                );
+                        p.getId(), p.getTitle(),
+                        p.getCategoryName(),
+                        p.getTag1(), p.getTag2(),
+                        p.getTag3(), p.getTag4(),
+                        p.getTag5(), p.getLikeNumber(),
+                        p.getUser().getUniv(), "무관",
+                        p.getCreatedDate()));
             }
             else {
                 postInfoResDtoList.add(new PostInfoResDto(
-                                p.getTitle(),
-                                p.getCategoryName(),
-                                p.getTag1(),
-                                p.getTag2(),
-                                p.getTag3(),
-                                p.getTag4(),
-                                p.getTag5(),
-                                p.getLikeNumber(),
-                                p.getUser().getUniv(),
-                                Integer.toString(p.getMember()),
-                                p.getCreatedDate()
-                        )
-                );
+                        p.getId(), p.getTitle(),
+                        p.getCategoryName(),
+                        p.getTag1(), p.getTag2(),
+                        p.getTag3(), p.getTag4(),
+                        p.getTag5(), p.getLikeNumber(),
+                        p.getUser().getUniv(), "무관",
+                        p.getCreatedDate()));
             }
         }
         return postInfoResDtoList;                     //반환
     }
-
     //게시글 제목 검색
     public List<PostInfoResDto> getPostListByTitle(String postTitle) throws BaseException {
         if(postTitle.isBlank())
@@ -93,47 +81,35 @@ public class PostService {
         for (Post p : postList) {
             if(p.getMember() == 0) {
                 postInfoResDtoList.add(new PostInfoResDto(
-                                p.getTitle(),
-                                p.getCategoryName(),
-                                p.getTag1(),
-                                p.getTag2(),
-                                p.getTag3(),
-                                p.getTag4(),
-                                p.getTag5(),
-                                p.getLikeNumber(),
-                                p.getUser().getUniv(),
-                                "무관",
-                                p.getCreatedDate()
-                        )
-                );
+                        p.getId(), p.getTitle(),
+                        p.getCategoryName(),
+                        p.getTag1(), p.getTag2(),
+                        p.getTag3(), p.getTag4(),
+                        p.getTag5(), p.getLikeNumber(),
+                        p.getUser().getUniv(), "무관",
+                        p.getCreatedDate()));
             }
             else {
                 postInfoResDtoList.add(new PostInfoResDto(
-                                p.getTitle(),
-                                p.getCategoryName(),
-                                p.getTag1(),
-                                p.getTag2(),
-                                p.getTag3(),
-                                p.getTag4(),
-                                p.getTag5(),
-                                p.getLikeNumber(),
-                                p.getUser().getUniv(),
-                                Integer.toString(p.getMember()),
-                                p.getCreatedDate()
-                        )
-                );
+                        p.getId(), p.getTitle(),
+                        p.getCategoryName(),
+                        p.getTag1(), p.getTag2(),
+                        p.getTag3(), p.getTag4(),
+                        p.getTag5(), p.getLikeNumber(),
+                        p.getUser().getUniv(), "무관",
+                        p.getCreatedDate()));
             }
         }
         return postInfoResDtoList;                     //반환
     }
-
-
+    //게시글 단일 조회
     public PostClickResDto getPostClick(Long postId) throws BaseException {
         Optional<Post> post;
         PostClickResDto postClickResDto;
         try{
             post = postRepository.findById(postId);
             postClickResDto = new PostClickResDto(
+                    post.get().getId(),
                     post.get().getTitle(),
                     post.get().getCategoryName(),
                     post.get().getTag1(),
@@ -143,15 +119,14 @@ public class PostService {
                     post.get().getTag5(),
                     post.get().getLikeNumber(),
                     post.get().getContext(),
-                    post.get().getCreatedDate()
-            );
+                    post.get().getCreatedDate());
         }
         catch(Exception e) {
             throw new BaseException(NO_RELATED_POST);
         }
         return postClickResDto;
     }
-
+    //게시글 단일 조회 - 댓글
     public List<CommentInfoResDto> getCommentList(Long postId) throws BaseException {
         List<Comment> commentList;
         List<CommentInfoResDto> commentInfoResDtoList = new ArrayList<>();
@@ -162,17 +137,17 @@ public class PostService {
                 List<CommentReplyInfoResDto> commentReplyInfoResDtoList =new ArrayList<>();
                 for(CommentReply r: commentReplyList){
                     commentReplyInfoResDtoList.add(new CommentReplyInfoResDto(
+                            r.getId(),
                             r.getContext(),
                             r.getCommentReplyLikeNumber(),
                             r.getCreatedDate()));
                 }
                 commentInfoResDtoList.add(new CommentInfoResDto(
-                                c.getContext(),
-                                c.getCommentLikeNumber(),
-                                c.getCreatedDate(),
-                                commentReplyInfoResDtoList
-                        )
-                );
+                        c.getId(),
+                        c.getContext(),
+                        c.getCommentLikeNumber(),
+                        c.getCreatedDate(),
+                        commentReplyInfoResDtoList));
             }
         }
         catch(Exception e) {
@@ -180,8 +155,39 @@ public class PostService {
         }
         return commentInfoResDtoList;
     }
-
-
+    //내가 쓴 게시글 조회
+    public List<PostInfoResDto> getAllPostListByUser(User user) throws BaseException {
+        List<Post> postList;
+        List<PostInfoResDto> postInfoResDtoList = new ArrayList<>();  //반환할 List를 생성
+        postList = postRepository.findAll();
+        if(postList.isEmpty())
+            throw new BaseException(SUCCESS_NO_POST);
+        for (Post p : postList) {
+            if(p.getUser().getId() == user.getId()) {
+                if (p.getMember() == 0) {
+                    postInfoResDtoList.add(new PostInfoResDto(
+                                    p.getId(), p.getTitle(),
+                                    p.getCategoryName(),
+                                    p.getTag1(), p.getTag2(),
+                                    p.getTag3(), p.getTag4(),
+                                    p.getTag5(), p.getLikeNumber(),
+                                    p.getUser().getUniv(), "무관",
+                                    p.getCreatedDate()));
+                } else {
+                    postInfoResDtoList.add(new PostInfoResDto(
+                                    p.getId(), p.getTitle(),
+                                    p.getCategoryName(),
+                                    p.getTag1(), p.getTag2(),
+                                    p.getTag3(), p.getTag4(),
+                                    p.getTag5(), p.getLikeNumber(),
+                                    p.getUser().getUniv(), "무관",
+                                    p.getCreatedDate()));
+                }
+            }
+        }
+        return postInfoResDtoList;
+    }
+    //카테고리별 게시글 조회
     public List<PostInfoResDto> getAllPostListByCategory(String categoryName) throws BaseException {
         List<Post> postList;
         List<PostInfoResDto> postInfoResDtoList = new ArrayList<>();
@@ -192,40 +198,28 @@ public class PostService {
         for (Post p : postList) {
             if(p.getMember() == 0) {
                 postInfoResDtoList.add(new PostInfoResDto(
-                                p.getTitle(),
+                                p.getId(), p.getTitle(),
                                 p.getCategoryName(),
-                                p.getTag1(),
-                                p.getTag2(),
-                                p.getTag3(),
-                                p.getTag4(),
-                                p.getTag5(),
-                                p.getLikeNumber(),
-                                p.getUser().getUniv(),
-                                "무관",
-                                p.getCreatedDate()
-                        )
-                );
+                                p.getTag1(), p.getTag2(),
+                                p.getTag3(), p.getTag4(),
+                                p.getTag5(), p.getLikeNumber(),
+                                p.getUser().getUniv(), "무관",
+                                p.getCreatedDate()));
             }
             else {
                 postInfoResDtoList.add(new PostInfoResDto(
-                                p.getTitle(),
+                                p.getId(), p.getTitle(),
                                 p.getCategoryName(),
-                                p.getTag1(),
-                                p.getTag2(),
-                                p.getTag3(),
-                                p.getTag4(),
-                                p.getTag5(),
-                                p.getLikeNumber(),
-                                p.getUser().getUniv(),
-                                Integer.toString(p.getMember()),
-                                p.getCreatedDate()
-                        )
-                );
+                                p.getTag1(), p.getTag2(),
+                                p.getTag3(), p.getTag4(),
+                                p.getTag5(), p.getLikeNumber(),
+                                p.getUser().getUniv(), "무관",
+                                p.getCreatedDate()));
             }
         }
         return postInfoResDtoList;
     }
-
+    //게시글 등록
     public PostRegisterResDto registerPost(PostRegisterReqDto postRegisterReqDto, User currentUser) throws BaseException {
 
         User user = userRepository.findByEmail(currentUser.getUsername())
@@ -251,12 +245,11 @@ public class PostService {
                 postRegisterReqDto.getTag3(),
                 postRegisterReqDto.getTag4(),
                 postRegisterReqDto.getTag5(),
-                postRegisterReqDto.getPostMember())
-        );
+                postRegisterReqDto.getPostMember()));
         PostRegisterResDto postRegisterResDto = new PostRegisterResDto(post.getId());
         return postRegisterResDto;
     }
-
+    //게시글 삭제
     public void deletePost(Long postId, User currentUser) throws BaseException {
         Optional<Post> post = postRepository.findById(postId);
         Optional<User> user = userRepository.findByEmail(currentUser.getUsername());
@@ -270,7 +263,7 @@ public class PostService {
 
         throw new BaseException(SUCCESS);
     }
-
+    //댓글 등록
     public CommentRegisterResDto registerComment(CommentRegisterReqDto commentRegisterReqDto,Long postId,User currentUser) throws BaseException{
         Optional<Post> post = postRepository.findById(postId);
         Optional<User> user = userRepository.findById(currentUser.getId());
@@ -289,7 +282,7 @@ public class PostService {
 
         return commentRegisterResDto;
     }
-
+    //댓글 삭제
     public void deleteComment(Long postId,Long commentId, User currentUser) throws BaseException {
         Optional<Post> post = postRepository.findById(postId);
         Optional<Comment> comment = commentRepository.findById(commentId);
@@ -311,7 +304,7 @@ public class PostService {
         commentRepository.deleteById(commentId);
         throw new BaseException(SUCCESS);
     }
-
+    //대댓글 등록
     public CommentReplyRegisterResDto registerCommentReply(CommentReplyRegisterReqDto commentReplyRegisterReqDto,Long commentId,User currentUser) throws BaseException {
         Optional<Comment> comment = commentRepository.findById(commentId);
         Optional<User> user =userRepository.findById(currentUser.getId());
@@ -331,7 +324,7 @@ public class PostService {
         CommentReplyRegisterResDto commentReplyRegisterResDto = new CommentReplyRegisterResDto(commentReply.getId());
         return commentReplyRegisterResDto;
     }
-
+    //대댓글 삭제
     public void deleteCommentReply(Long commentId,Long commentReplyId,User currentUser) throws BaseException {
         Optional<Comment> comment = commentRepository.findById(commentId);
         Optional<CommentReply> commentReply = commentReplyRepository.findById(commentReplyId);
@@ -352,7 +345,7 @@ public class PostService {
         commentReplyRepository.deleteById(commentReplyId);
         throw new BaseException(SUCCESS);
     }
-
+    //게시글 좋아요
     public void registerPostLike(Long postId) throws BaseException {
         Optional<Post> post = postRepository.findById(postId);
         if(post.isEmpty()) {
@@ -362,7 +355,7 @@ public class PostService {
         post.get().setLikeNumber(++like);
 
     }
-
+    //게시글 좋아요 삭제
     public void deletePostLike(Long postId) throws BaseException {
         Optional<Post> post = postRepository.findById(postId);
         if(post.isEmpty()) {
@@ -374,8 +367,7 @@ public class PostService {
         }
         post.get().setLikeNumber(--like);
     }
-
-
+    //댓글 좋아요
     public void registerCommentLike(Long postId, Long commentId) throws BaseException {
         Optional<Post> post = postRepository.findById(postId);
         Optional<Comment> comment = commentRepository.findById(commentId);
@@ -389,7 +381,7 @@ public class PostService {
         int like = comment.get().getCommentLikeNumber();
         comment.get().setCommentLikeNumber(++like);
     }
-
+    //댓글 좋아요 취소
     public void deleteCommentLike(Long postId, Long commentId) throws BaseException {
         Optional<Post> post = postRepository.findById(postId);
         Optional<Comment> comment = commentRepository.findById(commentId);
@@ -406,7 +398,7 @@ public class PostService {
         }
         comment.get().setCommentLikeNumber(--like);
     }
-
+    //대댓글 좋아요
     public void registerCommentReplyLike(Long commentId, Long commentReplyId) throws BaseException {
         Optional<Comment> comment = commentRepository.findById(commentId);
         Optional<CommentReply> commentReply = commentReplyRepository.findById(commentReplyId);
@@ -420,7 +412,7 @@ public class PostService {
         int like = commentReply.get().getCommentReplyLikeNumber();
         commentReply.get().setCommentReplyLikeNumber(++like);
     }
-
+    //대댓글 좋아요 취소
     public void deleteCommentReplyLike(Long commentId, Long commentReplyId) throws BaseException {
         Optional<Comment> comment = commentRepository.findById(commentId);
         Optional<CommentReply> commentReply = commentReplyRepository.findById(commentReplyId);
@@ -437,4 +429,27 @@ public class PostService {
         }
         commentReply.get().setCommentReplyLikeNumber(--like);
     }
+    //게시글 작성자인지 확인(게시글 ...)
+    public void isPostWriter(Long postId, Long id) throws BaseException {
+        if(postRepository.findById(postId).get().getUser().getId()==id)
+            throw new BaseException(SUCCESS);
+        else
+            throw new BaseException(NOT_WRITER);
+    }
+    //게시글 작성자인지 확인(댓글 ...)
+    public void isCommentWriter(Long commentId, Long id) throws BaseException {
+        if(commentRepository.findById(commentId).get().getUser().getId()==id)
+            throw new BaseException(SUCCESS);
+        else
+            throw new BaseException(NOT_WRITER);
+    }
+    //게시글 작성자인지 확인(대댓글 ...)
+    public void isCommentReplyWriter(Long commentReplyId, Long id) throws BaseException {
+        if(commentReplyRepository.findById(commentReplyId).get().getUser().getId()==id)
+            throw new BaseException(SUCCESS);
+        else
+            throw new BaseException(NOT_WRITER);
+    }
+
+
 }
