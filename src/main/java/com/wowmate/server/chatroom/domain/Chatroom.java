@@ -58,4 +58,8 @@ public class Chatroom extends BaseEntity {
 
     }
 
+    public void setMatchType(MatchType matchType) {
+        this.matchType = matchType;
+    }
+
 }

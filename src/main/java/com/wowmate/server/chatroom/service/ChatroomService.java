@@ -125,7 +125,6 @@ public class ChatroomService {
     // 채팅방 생성
     public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
 
-        log.info("user: {}", user.getBirth());
         if (user == null) {
             throw new BaseException(ResponseStatus.NOT_FOUND_USER);
         }
@@ -188,7 +187,6 @@ public class ChatroomService {
         return chatroomDto;
 
     }
-
 
     private Chatroom checkExistChatroom(Long postId, User user) {
 
