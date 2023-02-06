@@ -80,11 +80,14 @@ public class ChatroomController {
     public Response<GetChatroomDto, Object> createChatroom(@RequestParam Long postId, @AuthenticationPrincipal User user) {
 
         try {
-            log.info("postId: {}", postId);
+
             GetChatroomDto chatroomDto = chatroomService.createChatroom(postId, user);
             return new Response<>(chatroomDto);
+
         } catch (BaseException e) {
+
             return new Response<>(e.getResponseStatus());
+
         }
 
     }
