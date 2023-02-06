@@ -29,8 +29,9 @@ public class ChatroomController {
     public Response<List<GetChatroomListDto>, Object> getChatroomList(@AuthenticationPrincipal User user) {
 
         try {
-
+            log.info("현재 로그인한 유저: {}", user.getEmail());
             List<GetChatroomListDto> chatroomListDto = chatroomService.getChatroomList(user);
+
             return new Response<>(chatroomListDto);
 
         } catch(BaseException e) {
@@ -46,6 +47,7 @@ public class ChatroomController {
     public Response<GetChatroomDto, Object> getChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
         try {
+            log.info("현재 로그인한 유저: {}", user.getEmail());
             GetChatroomDto chatroomDto = chatroomService.getChatroom(roomUuid, user);
             return new Response<>(chatroomDto);
 
@@ -62,6 +64,7 @@ public class ChatroomController {
     public Response<List<GetChatroomListDto>, Object> deleteChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
         try {
+            log.info("현재 로그인한 유저: {}", user.getEmail());
             List<GetChatroomListDto> chatroomListDto = chatroomService.deleteChatroom(roomUuid, user);
             return new Response<>(chatroomListDto);
 
@@ -74,23 +77,13 @@ public class ChatroomController {
     }
 
 
-     // 채팅을 보내야만 채팅방이 만들어지게 구현??
-    @Operation(tags = "Chatroom", description = "채팅방 생성")
-    @PostMapping(value = "/chat/create")
-    public Response<GetChatroomDto, Object> createChatroom(@RequestParam Long postId, @AuthenticationPrincipal User user) {
-
-        try {
-            log.info("postId: {}", postId);
-            GetChatroomDto chatroomDto = chatroomService.createChatroom(postId, user);
-            return new Response<>(chatroomDto);
-        } catch (BaseException e) {
-            return new Response<>(e.getResponseStatus());
-        }
-
-    }
-
-
-
-
+    // 채팅을 보내야만 채팅방이 만들어지게 구현??
+//    @Operation(tags = "Chatroom", description = "채팅방 생성")
+//    @PostMapping(value = "posts/{postId}/chat/create")
+//    public GetChatroomDto createChatroom(@PathVariable Long postId, User user) {
+//
+//        return chatroomService.createChatroom(postId, user);
+//
+//    }
 
 }

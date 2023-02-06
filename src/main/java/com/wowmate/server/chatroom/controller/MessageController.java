@@ -29,6 +29,8 @@ import java.util.List;
 @Tag(name = "Message", description = "메세지 API")
 public class MessageController {
 
+    private final ChatroomService chatroomService;
+
     private final MessageService messageService;
 
     @Operation(tags = "Message", description = "메세지 전송")
@@ -36,14 +38,29 @@ public class MessageController {
     public Response<Object, Object> sendMessage(@RequestBody MessageDto messageDto) {
 
         try {
+            if (messageDto.getMessageType().equals(MessageType.ENTER)) {
+                chatroomService.createChatroom(messageDto);
+                log.info("채팅방 생성: {}", messageDto.getChatroomUuid());
+            }
 
             messageService.sendMessage(messageDto);
             return new Response<>(ResponseStatus.SUCCESS); // 이렇게 말고 다른 방법?
 
         } catch (BaseException e) {
-
             return new Response<>(e.getResponseStatus());
+        }
 
+    }
+
+    @Operation(tags = "Message", description = "매칭 수락")
+    @MessageMapping(value = "/chat/match/")
+    public Response<Object, Object> matchRespond(@AuthenticationPrincipal User user, @RequestBody String roomUuid) {
+
+        try {
+            messageService.matchRespond(user, roomUuid);
+            return new Response<>(ResponseStatus.SUCCESS);
+        } catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
         }
 
     }

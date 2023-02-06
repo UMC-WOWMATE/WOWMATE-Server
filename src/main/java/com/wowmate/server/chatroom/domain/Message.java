@@ -28,7 +28,4 @@ public class Message extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
-    @Embedded
-    private MatchInfo matchInfo;
-
 }
