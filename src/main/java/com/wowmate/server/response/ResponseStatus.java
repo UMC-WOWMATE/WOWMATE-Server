@@ -42,7 +42,8 @@ public enum ResponseStatus {
 
 
     // 채팅 예외
-    NO_CHATROOM(false, 404, "채팅방이 존재하지 않습니다.");
+    NO_CHATROOM(false, 404, "채팅방이 존재하지 않습니다."),
+    ALREADY_MATCH(false, 400, "이미 매칭이 완료되었습니다.");
 
 
     private final boolean isSuccess;

@@ -62,34 +62,6 @@ public class MessageService {
 
     }
 
-    public void matchRespond(User user, String roomUuid) throws BaseException {
-
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
-
-        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
-                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
-
-        MatchMessageDto matchMessageDto = MatchMessageDto.builder()
-                .age(user.getAge())
-                .phoneNumber(user.getPhoneNumber())
-                .gender(user.getGender().toString())
-                .build();
-
-        Message message = Message.builder()
-                .messageType(MessageType.MATCH)
-                .senderEmail(user.getEmail())
-                .content(matchMessageDto.toString())
-                .chatroom(chatroom)
-                .build();
-
-        messageRepository.save(message);
-
-        template.convertAndSend("/sub/chats/" + roomUuid, matchMessageDto);
-
-    }
-
     private UserChatroom checkExitUserChatroom(String roomUuid, String email) {
 
         List<UserChatroom> chatrooms = userChatroomRepository.findByUserEmail(email);
