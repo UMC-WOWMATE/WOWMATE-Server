@@ -12,6 +12,7 @@ public class MessageDto {
     private String chatroomUuid;
     private Long postId;
     private String senderEmail;
+    private String receiverEmail;
     private MessageType messageType;
     private String content;
 
