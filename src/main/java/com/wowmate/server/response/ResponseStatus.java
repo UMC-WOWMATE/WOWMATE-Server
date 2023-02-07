@@ -25,6 +25,8 @@ public enum ResponseStatus {
     NO_TAG(false,332,"태그를 선택해주세요."),
     NO_CONTEXT(false, 333, "내용을 입력해주세요."),
 
+    NOT_EXIST_USER(false, 340, "존재하지 않는 회원입니다."),
+
     //360~PUT요청
     NOT_WRITER(false,360,"작성자가 아닙니다."),
     NO_MODIFIED_CONTEXT(false,361,"수정된 부분이 없습니다."),
