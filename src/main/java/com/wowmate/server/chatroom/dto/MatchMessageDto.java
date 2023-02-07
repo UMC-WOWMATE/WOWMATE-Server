@@ -1,6 +1,7 @@
 package com.wowmate.server.chatroom.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.wowmate.server.chatroom.domain.MessageType;
 import com.wowmate.server.user.domain.Gender;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,5 +25,7 @@ public class MatchMessageDto {
     private String phoneNumber;
 
     private int age;
+
+    private MessageType messageType;
 
 }

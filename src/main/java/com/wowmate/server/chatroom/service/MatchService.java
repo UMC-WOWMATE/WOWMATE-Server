@@ -76,6 +76,7 @@ public class MatchService {
                 .senderEmail(user.getEmail())
                 .sendTime(message.getCreatedDate())
                 .content(message.getContent())
+                .messageType(message.getMessageType())
                 .build();
 
         return getMessageDto;
@@ -109,6 +110,7 @@ public class MatchService {
                 .gender(infoMessage.getMatchInfo().getGender())
                 .sendTime(infoMessage.getCreatedDate())
                 .content(infoMessage.getContent())
+                .messageType(infoMessage.getMessageType())
                 .build();
 
         return infoMessageDto;
