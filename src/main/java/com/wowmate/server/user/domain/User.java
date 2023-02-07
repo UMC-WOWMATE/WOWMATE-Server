@@ -51,7 +51,6 @@ public class User extends BaseEntity implements UserDetails{
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    //private String gender;
 
     //    이미지 논의 필요
     //    @Lob
@@ -101,6 +100,10 @@ public class User extends BaseEntity implements UserDetails{
         LocalDate today = LocalDate.now();
         int age = today.getYear() - this.birth.getYear();
         return age;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 
 }

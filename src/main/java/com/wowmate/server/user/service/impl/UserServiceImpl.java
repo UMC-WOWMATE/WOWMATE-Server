@@ -3,12 +3,9 @@ package com.wowmate.server.user.service.impl;
 import com.wowmate.server.config.common.CommonResponse;
 import com.wowmate.server.config.security.JwtTokenProvider;
 import com.wowmate.server.response.BaseException;
-import com.wowmate.server.user.domain.Gender;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
-import com.wowmate.server.user.dto.SignInRequestDto;
-import com.wowmate.server.user.dto.SignInResultDto;
-import com.wowmate.server.user.dto.SignUpRequestDto;
-import com.wowmate.server.user.dto.SignUpResultDto;
+import com.wowmate.server.user.dto.*;
 import com.wowmate.server.user.repository.UserRepository;
 import com.wowmate.server.user.service.UserService;
 import org.slf4j.Logger;
@@ -19,15 +16,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Optional;
+
+import static com.wowmate.server.response.ResponseStatus.NOT_EXIST_USER;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public final UserRepository userRepository;
-    public final JwtTokenProvider jwtTokenProvider;
-    public final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
@@ -42,8 +42,8 @@ public class UserServiceImpl implements UserService {
         log.info("[getSignUpResult] 회원 가입 정보 전달");
 
         SignUpResultDto signUpResultDto = new SignUpResultDto();
-
-        if (userRepository.findByEmail(signUpRequestDto.getEmail()) != null){
+        System.out.println(userRepository.findByEmail(signUpRequestDto.getEmail()));
+        if (!userRepository.findByEmail(signUpRequestDto.getEmail()).isEmpty()){
             log.info("[checkDuplicateSignUp] 중복 회원 가입");
             setDuplicateResult(signUpResultDto);
             return signUpResultDto;
@@ -97,10 +97,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SignInResultDto signIn(SignInRequestDto signInRequestDto) throws RuntimeException {
+    public SignInResultDto signIn(SignInRequestDto signInRequestDto) throws RuntimeException, BaseException {
 
         log.info("[getSignInResult] signDataHandler 로 회원 정보 요청");
-        User user = userRepository.findByEmail(signInRequestDto.getEmail());
+        User user = userRepository.findByEmail(signInRequestDto.getEmail())
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_FOUND_USER));
 
         log.info("[getSignInResult] Email : {}", signInRequestDto.getEmail());
         log.info("[getSignInResult] 패스워드 비교 수행");
@@ -117,6 +118,32 @@ public class UserServiceImpl implements UserService {
 
         setSuccessResult(signInResultDto);
         return signInResultDto;
+    }
+
+    public UserInfoDto getUserInfo(User currentUser) {
+
+        UserInfoDto userInfo = UserInfoDto.builder()
+                .email(currentUser.getEmail())
+                .univ(currentUser.getUniv())
+                .phoneNumber(currentUser.getPhoneNumber())
+                .birth(currentUser.getBirth())
+                .gender(currentUser.getGender())
+                .build();
+
+        return userInfo;
+    }
+
+    public void updatePassword(UpdatePasswordDto updatePasswordDto) throws BaseException{
+
+        Optional<User> user = userRepository.findByEmail(updatePasswordDto.getEmail());
+
+        if(user.isEmpty()) {
+            throw new BaseException(NOT_EXIST_USER);
+        }
+        log.info("[updatePassword] 비밀번호 변경");
+        user.get().updatePassword(passwordEncoder.encode(updatePasswordDto.getNew_password()));
+        userRepository.save(user.get());
+        log.info("[updatePassword] 비밀번호 변경 완료");
     }
 
     // 결과 모델에 api 요청 성공 데이터를 세팅해주는 메소드

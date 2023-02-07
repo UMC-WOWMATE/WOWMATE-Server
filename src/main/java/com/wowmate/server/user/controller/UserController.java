@@ -1,9 +1,11 @@
 package com.wowmate.server.user.controller;
 
+import com.wowmate.server.comment.dto.CommentRegisterResDto;
 import com.wowmate.server.post.domain.Post;
 import com.wowmate.server.post.dto.PostInfoResDto;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.Response;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.University;
 import com.wowmate.server.user.domain.User;
 import com.wowmate.server.user.dto.*;
@@ -30,10 +32,10 @@ public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final UniversityRepository universityRepository;
+//    private final UniversityRepository universityRepository;
 
     @PostMapping(value = "/sign-in")
-    public SignInResultDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException {
+    public SignInResultDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException, BaseException {
 
         log.info("[signIn] 로그인을 시도하고 있습니다. Email : {}, pw : ****", signInRequestDto.getEmail());
         SignInResultDto signInResultDto = userService.signIn(signInRequestDto);
@@ -58,36 +60,62 @@ public class UserController {
         return signUpResultDto;
     }
 
-    @GetMapping(value = "/univ")
-    public List<University> getUnivList() {
-            log.info("학교별 도메인 출력");
-            List<University> UnivList = universityRepository.findAll();
-            return UnivList;
+//    @GetMapping(value = "/univ")
+//    public List<University> getUnivList() {
+//            log.info("학교별 도메인 출력");
+//            List<University> UnivList = universityRepository.findAll();
+//            return UnivList;
+//    }
+
+    @GetMapping(value = "/mypage")
+    public Response<UserInfoDto,Object> getUserInfo(@AuthenticationPrincipal User user) {
+
+        UserInfoDto userInfoDto = userService.getUserInfo(user);
+
+        return new Response<>(userInfoDto);
     }
 
-    @GetMapping(value = "/myposts")
-    public List<PostInfoResDto> getMyPosts(@AuthenticationPrincipal User user) {
-        log.info("내가 쓴 글 목록 반환");
-        List<Post> MyPosts = user.getPostList();
-        List<PostInfoResDto> MyPostsInfo = new ArrayList<>();
-        for (Post p : MyPosts) {
-            MyPostsInfo.add(new PostInfoResDto(
-                            p.getTitle(),
-                            p.getCategoryName(),
-                            p.getTag1(),
-                            p.getTag2(),
-                            p.getTag3(),
-                            p.getTag4(),
-                            p.getTag5(),
-                            p.getLikeNumber(),
-                            p.getUser().getUniv(),
-                            p.getCreatedBy()
-                    )
-            );
-        }
-        return MyPostsInfo;
+    @GetMapping(value = "/logout")
+    public Response<Object, Object> logout() {
+
+        return new Response<>(ResponseStatus.SUCCESS);
     }
-    @GetMapping(value = "/exception")
+
+    @PostMapping(value = "/updatePassword")
+    public Response<Object, Object> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
+
+        try {
+            userService.updatePassword(updatePasswordDto);
+            return new Response<>(ResponseStatus.SUCCESS);
+        }
+        catch   (BaseException e){
+            return new Response<>(e.getResponseStatus());
+        }
+    }
+//    @GetMapping(value = "/myposts")
+//    public int getMyPosts(@AuthenticationPrincipal User user) {
+//        log.info("내가 쓴 글 목록 반환 {}");
+//        List<Post> MyPosts = user.getPostList();
+//        List<PostInfoResDto> MyPostsInfo = new ArrayList<>();
+//        for (Post p : MyPosts) {
+//            MyPostsInfo.add(new PostInfoResDto(
+//                            p.getTitle(),
+//                            p.getCategoryName(),
+//                            p.getTag1(),
+//                            p.getTag2(),
+//                            p.getTag3(),
+//                            p.getTag4(),
+//                            p.getTag5(),
+//                            p.getLikeNumber(),
+//                            p.getUser().getUniv(),
+//                            p.getMember(),
+//                            p.getCreatedBy()
+//                    )
+//            );
+//        }
+//        return MyPostsInfo;
+//    }
+    @GetMapping(value = "/sign-api/exception")
     public void exceptionResponse() throws RuntimeException {
         throw new RuntimeException("접근이 금지되었습니다.");
     }
