@@ -39,9 +39,7 @@ public class ChatroomService {
     @Transactional(readOnly = true)
     public List<GetChatroomListDto> getChatroomList(User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         List<GetChatroomListDto> chatroomListDtos = userChatroomRepository.findByUserEmail(user.getEmail())
                 .stream()
@@ -67,14 +65,11 @@ public class ChatroomService {
 
     }
 
-
     // 특정 채팅방 조회
     @Transactional(readOnly = true)
     public GetChatroomDto getChatroom(String roomUuid, User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
@@ -106,9 +101,7 @@ public class ChatroomService {
     // 채팅방 삭제
     public List<GetChatroomListDto> deleteChatroom(String roomUuid, User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
@@ -125,9 +118,7 @@ public class ChatroomService {
     // 채팅방 생성
     public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
@@ -166,6 +157,14 @@ public class ChatroomService {
                 .build();
 
         return chatroomDto;
+
+    }
+
+    private void userValidate(User user) throws BaseException {
+
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
 
     }
 
