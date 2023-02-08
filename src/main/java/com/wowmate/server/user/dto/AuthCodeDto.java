@@ -1,18 +1,16 @@
 package com.wowmate.server.user.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpResultDto {
+@Builder
+public class AuthCodeDto {
 
-    private boolean IsSuccess;
-
-    private String message;
-
-    private int code;
+    private String code;
 
 }

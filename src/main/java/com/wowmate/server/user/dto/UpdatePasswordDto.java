@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpResultDto {
+public class UpdatePasswordDto {
 
-    private boolean IsSuccess;
+    private String email;
 
-    private String message;
-
-    private int code;
+    private String new_password;
 
 }

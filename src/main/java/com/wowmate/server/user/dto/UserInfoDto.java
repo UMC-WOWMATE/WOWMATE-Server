@@ -13,13 +13,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserInfo {
+public class UserInfoDto {
 
     private String email;
 
     private String univ;
 
-    private Long phoneNumber;
+    private String phoneNumber;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate birth;
