@@ -103,23 +103,44 @@ public class PostService {
         return postInfoResDtoList;                     //반환
     }
     //게시글 단일 조회
-    public PostClickResDto getPostClick(Long postId) throws BaseException {
+    public PostClickResDto getPostClick(Long postId, User user) throws BaseException {
         Optional<Post> post;
         PostClickResDto postClickResDto;
+
         try{
             post = postRepository.findById(postId);
-            postClickResDto = new PostClickResDto(
-                    post.get().getId(),
-                    post.get().getTitle(),
-                    post.get().getCategoryName(),
-                    post.get().getTag1(),
-                    post.get().getTag2(),
-                    post.get().getTag3(),
-                    post.get().getTag4(),
-                    post.get().getTag5(),
-                    post.get().getLikeNumber(),
-                    post.get().getContext(),
-                    post.get().getCreatedDate());
+            if(post.get().getUser().getId()==user.getId())
+            {
+                postClickResDto = new PostClickResDto(
+                        true,
+                        post.get().getId(),
+                        post.get().getTitle(),
+                        post.get().getCategoryName(),
+                        post.get().getTag1(),
+                        post.get().getTag2(),
+                        post.get().getTag3(),
+                        post.get().getTag4(),
+                        post.get().getTag5(),
+                        post.get().getLikeNumber(),
+                        post.get().getContext(),
+                        post.get().getCreatedDate());
+            }
+            else {
+                postClickResDto = new PostClickResDto(
+                        false,
+                        post.get().getId(),
+                        post.get().getTitle(),
+                        post.get().getCategoryName(),
+                        post.get().getTag1(),
+                        post.get().getTag2(),
+                        post.get().getTag3(),
+                        post.get().getTag4(),
+                        post.get().getTag5(),
+                        post.get().getLikeNumber(),
+                        post.get().getContext(),
+                        post.get().getCreatedDate());
+            }
+
         }
         catch(Exception e) {
             throw new BaseException(NO_RELATED_POST);
