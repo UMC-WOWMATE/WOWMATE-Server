@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 public class GetChatroomListDto {
 
+    private String roomUuid;
+
     private String postTitle;
 
     private String lastMessage;
