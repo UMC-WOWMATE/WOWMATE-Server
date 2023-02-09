@@ -43,4 +43,4 @@ out/
 /src/test/
 
 ### email.properties ###
-/src/resources/email.properties
+/src/main/resources/email.properties/
