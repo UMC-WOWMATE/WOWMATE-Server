@@ -126,7 +126,7 @@ public class ChatroomService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
-        // 생성된 채팅방이 없으면 createChatroom 로직 실행 x
+        // 생성된 채팅방이 있으면 createChatroom 로직 실행 x
         // 같은 유저가 채팅 중복 생성을 하면 기존 채팅방 반환
         Chatroom chatroom = checkExistChatroom(postId, user);
 
