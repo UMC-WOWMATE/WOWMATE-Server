@@ -65,6 +65,7 @@ public class MessageService {
                 .content(message.getContent())
                 .sendTime(message.getCreatedDate())
                 .senderEmail(message.getSenderEmail())
+                .messageType(message.getMessageType())
                 .build();
 
         template.convertAndSend("/sub/chats/" + messageDto.getChatroomUuid(), getMessageDto);

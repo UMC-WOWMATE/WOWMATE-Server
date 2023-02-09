@@ -32,7 +32,6 @@ public class PostController {
             return new Response<>(e.getResponseStatus());
         }
 
-
     }
     //게시글 제목 검색
     @GetMapping("/posts/search")
@@ -50,11 +49,11 @@ public class PostController {
     }
     //게시글 단일 조회
     @GetMapping("/posts/{postId}")
-    public Response<PostClickResDto, List<CommentInfoResDto>> getPostClick(@PathVariable Long postId) {
+    public Response<PostClickResDto, List<CommentInfoResDto>> getPostClick(@PathVariable Long postId, @AuthenticationPrincipal User user) {
         PostClickResDto postClickResDto;
         List<CommentInfoResDto> commentInfoResDtoList;
         try {
-            postClickResDto = postService.getPostClick(postId);
+            postClickResDto = postService.getPostClick(postId, user);
             commentInfoResDtoList = postService.getCommentList(postId);
             return new Response<>(postClickResDto, commentInfoResDtoList);
         } catch (BaseException e) {

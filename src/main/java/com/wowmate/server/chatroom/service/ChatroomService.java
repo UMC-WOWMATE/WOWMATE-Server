@@ -39,15 +39,14 @@ public class ChatroomService {
     @Transactional(readOnly = true)
     public List<GetChatroomListDto> getChatroomList(User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         List<GetChatroomListDto> chatroomListDtos = userChatroomRepository.findByUserEmail(user.getEmail())
                 .stream()
                 .map(
                         userChatroom ->
                                 GetChatroomListDto.builder()
+                                        .roomUuid(userChatroom.getChatroom().getUuid())
                                         .postTitle(userChatroom.getChatroom().getPost().getTitle())
                                         .opponentUserImg(userChatroom.getOpponentUserImg())
                                         .lastMessage(
@@ -67,14 +66,11 @@ public class ChatroomService {
 
     }
 
-
     // 특정 채팅방 조회
     @Transactional(readOnly = true)
     public GetChatroomDto getChatroom(String roomUuid, User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
@@ -90,10 +86,12 @@ public class ChatroomService {
                                                 .senderEmail(message.getSenderEmail())
                                                 .content(message.getContent())
                                                 .sendTime(message.getCreatedDate())
+                                                .messageType(message.getMessageType())
                                                 .build()
                                 ).collect(Collectors.toList())
                 )
                 .opponentEmail(chatroom.getOpponentUserEmail())
+                .userEmail(chatroom.getUser().getEmail())
                 .opponentImg(chatroom.getOpponentUserImg())
                 .postCategory(chatroom.getChatroom().getPost().getCategoryName())
                 .build();
@@ -106,9 +104,7 @@ public class ChatroomService {
     // 채팅방 삭제
     public List<GetChatroomListDto> deleteChatroom(String roomUuid, User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         UserChatroom chatroom = userChatroomRepository.findByUuidAndEmail(roomUuid, user.getEmail())
                 .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
@@ -125,14 +121,12 @@ public class ChatroomService {
     // 채팅방 생성
     public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
 
-        if (user == null) {
-            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
-        }
+        userValidate(user);
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
-        // 생성된 채팅방이 없으면 createChatroom 로직 실행 x
+        // 생성된 채팅방이 있으면 createChatroom 로직 실행 x
         // 같은 유저가 채팅 중복 생성을 하면 기존 채팅방 반환
         Chatroom chatroom = checkExistChatroom(postId, user);
 
@@ -157,6 +151,7 @@ public class ChatroomService {
                                                 .senderEmail(message.getSenderEmail())
                                                 .content(message.getContent())
                                                 .sendTime(message.getCreatedDate())
+                                                .messageType(message.getMessageType())
                                                 .build()
                                 ).collect(Collectors.toList())
                 )
@@ -166,6 +161,14 @@ public class ChatroomService {
                 .build();
 
         return chatroomDto;
+
+    }
+
+    private void userValidate(User user) throws BaseException {
+
+        if (user == null) {
+            throw new BaseException(ResponseStatus.NOT_FOUND_USER);
+        }
 
     }
 

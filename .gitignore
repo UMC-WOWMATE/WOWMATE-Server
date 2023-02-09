@@ -41,3 +41,10 @@ out/
 
 ### test ###
 /src/test/
+
+### email.properties ###
+<<<<<<< HEAD
+/src/resources/email.properties
+=======
+/src/resources/email.properties
+>>>>>>> 900ab3dd75b78838f2f23228c79aac10218127ee

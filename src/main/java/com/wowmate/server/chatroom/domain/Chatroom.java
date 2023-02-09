@@ -40,7 +40,6 @@ public class Chatroom extends BaseEntity {
     @OneToMany(mappedBy = "chatroom")
     private List<UserChatroom> userChatrooms = new ArrayList<>();
 
-
     @Enumerated(EnumType.STRING)
     private MatchType matchType;
 
