@@ -20,6 +20,8 @@ public class GetChatroomDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
 
+    private String userEmail;
+
     private String opponentEmail;
 
     private String opponentImg;

@@ -46,6 +46,7 @@ public class ChatroomService {
                 .map(
                         userChatroom ->
                                 GetChatroomListDto.builder()
+                                        .roomUuid(userChatroom.getChatroom().getUuid())
                                         .postTitle(userChatroom.getChatroom().getPost().getTitle())
                                         .opponentUserImg(userChatroom.getOpponentUserImg())
                                         .lastMessage(
@@ -90,6 +91,7 @@ public class ChatroomService {
                                 ).collect(Collectors.toList())
                 )
                 .opponentEmail(chatroom.getOpponentUserEmail())
+                .userEmail(chatroom.getUser().getEmail())
                 .opponentImg(chatroom.getOpponentUserImg())
                 .postCategory(chatroom.getChatroom().getPost().getCategoryName())
                 .build();
