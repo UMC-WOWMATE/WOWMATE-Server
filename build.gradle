@@ -55,10 +55,11 @@ dependencies {
 	// configuration-processor
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-//	Mail API
-//	implementation 'javax.mail:mail:1.4.7'
-//	implementation 'org.springframework:spring-context-support'
+	// Mail API
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
