@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.wowmate.server.response.ResponseStatus.NOT_EXIST_USER;
+import static com.wowmate.server.response.ResponseStatus.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -144,6 +144,14 @@ public class UserServiceImpl implements UserService {
         user.get().updatePassword(passwordEncoder.encode(updatePasswordDto.getNew_password()));
         userRepository.save(user.get());
         log.info("[updatePassword] 비밀번호 변경 완료");
+    }
+
+    public void deleteUser(User currentUser) throws BaseException{
+
+        User user = userRepository.findByEmail(currentUser.getUsername())
+                .orElseThrow(() -> new BaseException(NOT_FOUND_USER));
+
+        userRepository.deleteById(user.getId());
     }
 
     // 결과 모델에 api 요청 성공 데이터를 세팅해주는 메소드
