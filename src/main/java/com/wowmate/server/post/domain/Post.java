@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -44,7 +45,14 @@ public class Post extends BaseEntity {
 
     private int member;
 
-    public Post(User user, String title, String context, String categoryName, String tag1, String tag2, String tag3, String tag4, String tag5, int member) {
+    private String image1;
+    private String image2;
+    private String image3;
+    private String image4;
+    private String image5;
+
+    public Post(User user, String title, String context, String categoryName, String tag1, String tag2, String tag3, String tag4, String tag5, int member,
+                String image1, String image2, String image3, String image4, String image5) {
         this.user = user;
         this.title = title;
         this.context = context;
@@ -55,5 +63,10 @@ public class Post extends BaseEntity {
         this.tag4 = tag4;
         this.tag5 = tag5;
         this.member = member;
+        this.image1 = image1;
+        this.image2 = image2;
+        this.image3 = image3;
+        this.image4 = image4;
+        this.image5 = image5;
     }
 }
