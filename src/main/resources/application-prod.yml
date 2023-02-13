@@ -69,3 +69,15 @@ mail:
 AdminMail:
   id: ${AdminMail_ID}
   password: ${AdminMail_PASSWORD}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESSKEY}
+      secretKey: ${AWS_SECRETKEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto-: false
