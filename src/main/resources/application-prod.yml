@@ -52,3 +52,20 @@ spring:
 #    init:
 #      mode: always
 #      data-locations: classpath:/db/data.sql
+
+mail:
+  smtp:
+    auth: true
+    starttls:
+      required: true
+      enable: true
+    socketFactory:
+      class: javax.net.ssl.SSLSocketFactory
+      fallback: false
+      port: 465
+    port: 465
+
+# admin ?? ??
+AdminMail:
+  id: ${AdminMail_ID}
+  password: ${AdminMail_PASSWORD}
