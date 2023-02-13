@@ -52,3 +52,32 @@ spring:
 #    init:
 #      mode: always
 #      data-locations: classpath:/db/data.sql
+
+mail:
+  smtp:
+    auth: true
+    starttls:
+      required: true
+      enable: true
+    socketFactory:
+      class: javax.net.ssl.SSLSocketFactory
+      fallback: false
+      port: 465
+    port: 465
+
+# admin ?? ??
+AdminMail:
+  id: ${AdminMail_ID}
+  password: ${AdminMail_PASSWORD}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESSKEY}
+      secretKey: ${AWS_SECRETKEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto-: false
