@@ -36,7 +36,7 @@ spring:
     defer-datasource-initialization: true
     hibernate:
       #ddl-auto: create
-      ddl-auto: update
+      ddl-auto: none
       #hbm2ddl:
       # import_files: classpath:db/data.sql # DB ?? ????? ??
       #import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
@@ -81,3 +81,4 @@ cloud:
       static: ${AWS_REGION}
     stack:
       auto-: false
+
