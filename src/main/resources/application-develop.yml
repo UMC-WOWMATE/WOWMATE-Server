@@ -81,3 +81,10 @@ cloud:
       static: ${AWS_REGION}
     stack:
       auto-: false
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR

@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class S3Service {
 
     @Value("${cloud.aws.s3.bucket}")
@@ -31,6 +33,7 @@ public class S3Service {
     public ArrayList<String> uploadFile(List<MultipartFile> multipartFile) {
         ArrayList<String> imagePathList = new ArrayList<>();
 
+        log.info("Metadata 생성 시작");
         // forEach 구문을 통해 multipartFile 로 넘어온 파일들 하나씩 fileNameList 에 추가
         multipartFile.forEach(file -> {
             String fileName = createFileName(file.getOriginalFilename());
@@ -38,12 +41,17 @@ public class S3Service {
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
 
+            log.info("Metadata 생성 완료");
+
             try(InputStream inputStream = file.getInputStream()) {
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
             } catch(IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
+
+            log.info("이미지 업로드 완료");
+
             String imagePath = amazonS3.getUrl(bucket, fileName).toString(); // 접근가능한 URL 가져오기
             imagePathList.add(imagePath);
         });
