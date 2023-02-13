@@ -26,17 +26,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.wowmate.server.response.ResponseStatus.SUCCESS;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-//    private final UniversityRepository universityRepository;
+//  private final UniversityRepository universityRepository;
 	
     @GetMapping(value = "/")
     public Response<Object, Object> init(){
-	    return new Response<>(ResponseStatus.SUCCESS); 
+	    return new Response<>(ResponseStatus.SUCCESS);
     }
 	
     @PostMapping(value = "/sign-in")
@@ -84,6 +86,16 @@ public class UserController {
     public Response<Object, Object> logout() {
 
         return new Response<>(ResponseStatus.SUCCESS);
+    }
+
+    @GetMapping(value = "/secession")
+    public Response<Object, Object> secession(@AuthenticationPrincipal User user) {
+        try {
+            userService.deleteUser(user);
+            return new Response<>(SUCCESS);
+        } catch (BaseException e) {
+            return new Response<>(e.getResponseStatus());
+        }
     }
 
     @PostMapping(value = "/updatePassword")

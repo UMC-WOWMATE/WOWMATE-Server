@@ -13,4 +13,5 @@ public interface UserService {
     SignInResultDto signIn(SignInRequestDto signInRequestDto) throws RuntimeException, BaseException;
     UserInfoDto getUserInfo(User currentUser);
     void updatePassword(UpdatePasswordDto updatePasswordDto) throws  BaseException;
+    void deleteUser(User currentUser) throws BaseException;
 }

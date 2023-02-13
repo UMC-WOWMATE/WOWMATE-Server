@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
-@PropertySource("classpath:email.properties")
+//@PropertySource("classpath:application-prod.yml")
 public class EmailConfig {
     @Value("${mail.smtp.port}")
     private int port;
