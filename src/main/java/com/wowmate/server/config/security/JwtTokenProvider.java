@@ -46,7 +46,7 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey = "secretKey"; // yml에서 값을 가져올 수 없다면 기본값으로 받아옴
     private Key key;
-    private final long tokenValidMillisecond = 1000L * 60 * 60;
+    private final long tokenValidMillisecond = 1000L * 60 * 60 * 24 * 30;
 
     @PostConstruct
     protected void init() {
