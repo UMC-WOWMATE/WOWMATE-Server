@@ -42,5 +42,6 @@ out/
 ### test ###
 /src/test/
 
-### email.properties ###
+### properties ###
 /src/main/resources/email.properties
+/src/main/resources/cloud.properties

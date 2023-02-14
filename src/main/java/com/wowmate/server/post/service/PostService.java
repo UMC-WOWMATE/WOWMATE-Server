@@ -34,6 +34,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final CommentReplyRepository commentReplyRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     //게시글 전체 조회
     public List<PostInfoResDto> getAllPostList() throws BaseException {
@@ -120,7 +121,13 @@ public class PostService {
                     post.getTag5(),
                     post.getLikeNumber(),
                     post.getContext(),
-                    post.getCreatedDate());
+                    post.getImage1(),
+                    post.getImage2(),
+                    post.getImage3(),
+                    post.getImage4(),
+                    post.getImage5(),
+                    post.getCreatedDate()
+            );
         }
         else {
             postClickResDto = new PostClickResDto(
@@ -135,6 +142,11 @@ public class PostService {
                     post.getTag5(),
                     post.getLikeNumber(),
                     post.getContext(),
+                    post.getImage1(),
+                    post.getImage2(),
+                    post.getImage3(),
+                    post.getImage4(),
+                    post.getImage5(),
                     post.getCreatedDate());
         }
         return postClickResDto;
@@ -251,7 +263,12 @@ public class PostService {
                 postRegisterReqDto.getTag3(),
                 postRegisterReqDto.getTag4(),
                 postRegisterReqDto.getTag5(),
-                postRegisterReqDto.getPostMember()));
+                postRegisterReqDto.getPostMember(),
+                postRegisterReqDto.getImage1(),
+                postRegisterReqDto.getImage2(),
+                postRegisterReqDto.getImage3(),
+                postRegisterReqDto.getImage4(),
+                postRegisterReqDto.getImage5()));
         PostRegisterResDto postRegisterResDto = new PostRegisterResDto(post.getId());
         return postRegisterResDto;
     }
@@ -264,10 +281,26 @@ public class PostService {
         if(!post.getUser().getId().equals(user.getId())){
             throw new BaseException(NOT_WRITER);
         }
+        deleteFile(post.getImage1());
+        deleteFile(post.getImage2());
+        deleteFile(post.getImage3());
+        deleteFile(post.getImage4());
+        deleteFile(post.getImage5());
+
         postRepository.deleteById(postId);
 
         throw new BaseException(SUCCESS);
     }
+
+    //게시글에 존재하는 첨부파일 삭제
+    private void deleteFile(String ImageURL) {
+        if(ImageURL == null){
+            return;
+        }
+        String ImageName = ImageURL.split("com/")[1].trim();
+        s3Service.deleteFile(ImageName);
+    }
+
     //댓글 등록
     public CommentRegisterResDto registerComment(CommentRegisterReqDto commentRegisterReqDto,Long postId,User currentUser) throws BaseException{
         Post post = postRepository.findById(postId)
