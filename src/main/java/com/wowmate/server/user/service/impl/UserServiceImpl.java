@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
                     .birth(signUpRequestDto.getBirth())
                     .gender(signUpRequestDto.getGender())
                     .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
-                    //.image_url(signUpRequestDto.getImage_url())
+                    .image_url(signUpRequestDto.getImage_url())
                     .roles(Collections.singletonList("ROLE_ADMIN"))
                     .build();
             /**
