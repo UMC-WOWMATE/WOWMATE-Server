@@ -81,4 +81,3 @@ cloud:
       static: ${AWS_REGION}
     stack:
       auto-: false
-
