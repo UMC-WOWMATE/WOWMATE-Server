@@ -149,8 +149,6 @@ public class ChatroomService {
 
         userValidate(user);
 
-        postValidate(postId);
-
         Post post = postValidate(postId);
 
         Chatroom chatroom = new Chatroom(post, user);
