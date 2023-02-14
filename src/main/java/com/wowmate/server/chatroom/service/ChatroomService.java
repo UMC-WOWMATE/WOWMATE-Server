@@ -194,7 +194,7 @@ public class ChatroomService {
                 .chatroom(chatroom)
                 .user(chatroom.getPost().getUser())
                 .opponentUserEmail(chatroom.getRequestUser().getEmail())
-                .opponentUserImg(chatroom.getRequestUser().getImage())
+                .opponentUserImg(chatroom.getRequestUser().getImage_url())
                 .build();
 
         userChatroomRepository.save(postUserChatroom);
@@ -204,7 +204,7 @@ public class ChatroomService {
                 .chatroom(chatroom)
                 .user(chatroom.getRequestUser())
                 .opponentUserEmail(chatroom.getPostUserEmail())
-                .opponentUserImg(chatroom.getPost().getUser().getImage())
+                .opponentUserImg(chatroom.getPost().getUser().getImage_url())
                 .build();
 
         userChatroomRepository.save(requestUserChatroom);

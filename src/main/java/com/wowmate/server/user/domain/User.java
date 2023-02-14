@@ -55,7 +55,7 @@ public class User extends BaseEntity implements UserDetails{
     //    이미지 논의 필요
     //    @Lob
     //    private String image; --> ??
-    private String image;
+    private String image_url;
 
     //관리자 페이지를 별도로 형성할 경우 사용
     @ElementCollection(fetch = FetchType.EAGER)

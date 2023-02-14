@@ -19,7 +19,7 @@ public class PostInfoResDto {
     private String tag5;
     private int postLikeNumber;
     private String schoolName;
-
+    private String image_url;
     private String postMember;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")

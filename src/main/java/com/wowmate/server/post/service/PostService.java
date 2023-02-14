@@ -37,7 +37,7 @@ public class PostService {
     private final S3Service s3Service;
 
     //게시글 전체 조회
-    public List<PostInfoResDto> getAllPostList() throws BaseException {
+    public List<PostInfoResDto> getAllPostList(User user) throws BaseException {
 
         List<Post> postList;
         List<PostInfoResDto> postInfoResDtoList = new ArrayList<>();  //반환할 List를 생성
@@ -53,7 +53,9 @@ public class PostService {
                         p.getTag1(), p.getTag2(),
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
-                        p.getUser().getUniv(), "무관",
+                        p.getUser().getUniv(),
+                        user.getImage_url(),
+                        "무관",
                         p.getCreatedDate()));
             }
             else {
@@ -64,13 +66,14 @@ public class PostService {
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
                         p.getUser().getUniv(), Integer.toString(p.getMember()),
+                        user.getImage_url(),
                         p.getCreatedDate()));
             }
         }
         return postInfoResDtoList;                     //반환
     }
     //게시글 제목 검색
-    public List<PostInfoResDto> getPostListByTitle(String postTitle) throws BaseException {
+    public List<PostInfoResDto> getPostListByTitle(String postTitle, User user) throws BaseException {
         if(postTitle.isBlank())
             throw new BaseException(NO_TITLE);
         List<Post> postList;
@@ -86,7 +89,9 @@ public class PostService {
                         p.getTag1(), p.getTag2(),
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
-                        p.getUser().getUniv(), "무관",
+                        p.getUser().getUniv(),
+                        user.getImage_url(),
+                        "무관",
                         p.getCreatedDate()));
             }
             else {
@@ -97,6 +102,7 @@ public class PostService {
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
                         p.getUser().getUniv(), Integer.toString(p.getMember()),
+                        user.getImage_url(),
                         p.getCreatedDate()));
             }
         }
@@ -114,6 +120,7 @@ public class PostService {
                     post.getId(),
                     post.getTitle(),
                     post.getCategoryName(),
+                    Integer.toString(post.getMember()),
                     post.getTag1(),
                     post.getTag2(),
                     post.getTag3(),
@@ -135,6 +142,7 @@ public class PostService {
                     post.getId(),
                     post.getTitle(),
                     post.getCategoryName(),
+                    Integer.toString(post.getMember()),
                     post.getTag1(),
                     post.getTag2(),
                     post.getTag3(),
@@ -191,7 +199,9 @@ public class PostService {
                             p.getTag1(), p.getTag2(),
                             p.getTag3(), p.getTag4(),
                             p.getTag5(), p.getLikeNumber(),
-                            p.getUser().getUniv(), "무관",
+                            p.getUser().getUniv(),
+                            user.getImage_url(),
+                            "무관",
                             p.getCreatedDate()));
                 } else {
                     postInfoResDtoList.add(new PostInfoResDto(
@@ -201,6 +211,7 @@ public class PostService {
                             p.getTag3(), p.getTag4(),
                             p.getTag5(), p.getLikeNumber(),
                             p.getUser().getUniv(), Integer.toString(p.getMember()),
+                            user.getImage_url(),
                             p.getCreatedDate()));
                 }
             }
@@ -208,7 +219,7 @@ public class PostService {
         return postInfoResDtoList;
     }
     //카테고리별 게시글 조회
-    public List<PostInfoResDto> getAllPostListByCategory(String categoryName) throws BaseException {
+    public List<PostInfoResDto> getAllPostListByCategory(String categoryName, User user) throws BaseException {
         List<Post> postList;
         List<PostInfoResDto> postInfoResDtoList = new ArrayList<>();
 
@@ -223,7 +234,9 @@ public class PostService {
                         p.getTag1(), p.getTag2(),
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
-                        p.getUser().getUniv(), "무관",
+                        p.getUser().getUniv(),
+                        user.getImage_url(),
+                        "무관",
                         p.getCreatedDate()));
             }
             else {
@@ -233,7 +246,9 @@ public class PostService {
                         p.getTag1(), p.getTag2(),
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
-                        p.getUser().getUniv(), Integer.toString(p.getMember()),
+                        p.getUser().getUniv(),
+                        Integer.toString(p.getMember()),
+                        user.getImage_url(),
                         p.getCreatedDate()));
             }
         }
@@ -435,21 +450,27 @@ public class PostService {
     }
     //게시글 작성자인지 확인(게시글 ...)
     public void isPostWriter(Long postId, Long id) throws BaseException {
-        if(postRepository.findById(postId).get().getUser().getId().equals(id))
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
+        if(post.getUser().getId().equals(id))
             throw new BaseException(SUCCESS);
         else
             throw new BaseException(NOT_WRITER);
     }
     //게시글 작성자인지 확인(댓글 ...)
     public void isCommentWriter(Long commentId, Long id) throws BaseException {
-        if(commentRepository.findById(commentId).get().getUser().getId().equals(id))
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BaseException(NOT_EXIST_COMMENT));
+        if(comment.getUser().getId().equals(id))
             throw new BaseException(SUCCESS);
         else
             throw new BaseException(NOT_WRITER);
     }
     //게시글 작성자인지 확인(대댓글 ...)
     public void isCommentReplyWriter(Long commentReplyId, Long id) throws BaseException {
-        if(commentReplyRepository.findById(commentReplyId).get().getUser().getId().equals(id))
+        CommentReply commentReply = commentReplyRepository.findById(commentReplyId)
+                .orElseThrow(() -> new BaseException(NOT_EXIST_COMMENTREPLY));
+        if(commentReply.getUser().getId().equals(id))
             throw new BaseException(SUCCESS);
         else
             throw new BaseException(NOT_WRITER);

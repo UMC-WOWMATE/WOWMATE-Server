@@ -31,8 +31,7 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList = new ArrayList<>();
-
-
+    
     private String title;
     private String context;
     private int likeNumber;

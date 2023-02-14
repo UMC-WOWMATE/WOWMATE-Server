@@ -28,10 +28,10 @@ public class PostController {
 
     //게시글 전체 조회
     @GetMapping("/posts")
-    public Response<List<PostInfoResDto>, Object> getAllPostList() {
+    public Response<List<PostInfoResDto>, Object> getAllPostList(@AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getAllPostList();
+            postInfoResDtoList = postService.getAllPostList(user);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -40,10 +40,10 @@ public class PostController {
     }
     //게시글 제목 검색
     @GetMapping("/posts/search")
-    public Response<List<PostInfoResDto>, Object> getPostListByTitle(@RequestParam("title") String postTitle) {
+    public Response<List<PostInfoResDto>, Object> getPostListByTitle(@RequestParam("title") String postTitle, @AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getPostListByTitle(postTitle);
+            postInfoResDtoList = postService.getPostListByTitle(postTitle,user);
             if (postInfoResDtoList.isEmpty())
                 throw new BaseException(NO_RELATED_POST);
             return new Response<>(postInfoResDtoList);
@@ -79,10 +79,10 @@ public class PostController {
     }
     //카테고리별 게시글 조회
     @GetMapping("/posts/category")
-    public Response<List<PostInfoResDto>, Object> getAllPostListByCategory(@RequestParam("name") String categoryName) {
+    public Response<List<PostInfoResDto>, Object> getAllPostListByCategory(@RequestParam("name") String categoryName, @AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getAllPostListByCategory(categoryName);
+            postInfoResDtoList = postService.getAllPostListByCategory(categoryName,user);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -99,9 +99,13 @@ public class PostController {
                                                              @RequestParam String tag4,
                                                              @RequestParam String tag5,
                                                              @RequestParam String postContext,
-                                                             @RequestPart List<MultipartFile> multipartFile, @AuthenticationPrincipal User user) {
+                                                             @RequestParam(required = false) List<MultipartFile> multipartFile, @AuthenticationPrincipal User user) {
 
-        ArrayList<String> files = S3Service.uploadFile(multipartFile);
+        ArrayList<String> files = new ArrayList<>();
+
+        if(multipartFile != null) {
+            files = S3Service.uploadFile(multipartFile);
+        }
 
         if(files.size() < 5) {
             for (int i = files.size()+1; i < 6; i++)

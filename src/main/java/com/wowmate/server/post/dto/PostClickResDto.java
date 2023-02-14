@@ -13,6 +13,7 @@ public class PostClickResDto {
     private Long postId;
     private String postTitle;
     private String categoryName;
+    private String postMember;
     private String postTag1;
     private String postTag2;
     private String postTag3;
