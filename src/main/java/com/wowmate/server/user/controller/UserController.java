@@ -34,8 +34,13 @@ public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-//    private final UniversityRepository universityRepository;
-
+//  private final UniversityRepository universityRepository;
+	
+    @GetMapping(value = "/")
+    public Response<Object, Object> init(){
+	    return new Response<>(ResponseStatus.SUCCESS);
+    }
+	
     @PostMapping(value = "/sign-in")
     public SignInResultDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException, BaseException {
 
