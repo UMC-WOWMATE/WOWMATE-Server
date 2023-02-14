@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.wowmate.server.response.ResponseStatus.*;
@@ -32,6 +33,7 @@ public class PostController {
         List<PostInfoResDto> postInfoResDtoList;
         try {
             postInfoResDtoList = postService.getAllPostList(user);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -46,6 +48,7 @@ public class PostController {
             postInfoResDtoList = postService.getPostListByTitle(postTitle,user);
             if (postInfoResDtoList.isEmpty())
                 throw new BaseException(NO_RELATED_POST);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -71,6 +74,7 @@ public class PostController {
         List<PostInfoResDto> postInfoResDtoList;
         try {
             postInfoResDtoList = postService.getAllPostListByUser(user);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         }
         catch (BaseException e) {
@@ -83,6 +87,7 @@ public class PostController {
         List<PostInfoResDto> postInfoResDtoList;
         try {
             postInfoResDtoList = postService.getAllPostListByCategory(categoryName,user);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -99,13 +104,35 @@ public class PostController {
                                                              @RequestParam String tag4,
                                                              @RequestParam String tag5,
                                                              @RequestParam String postContext,
-                                                             @RequestParam(required = false) List<MultipartFile> multipartFile, @AuthenticationPrincipal User user) {
+                                                             @RequestParam(required = false) MultipartFile image1,
+                                                             @RequestParam(required = false) MultipartFile image2,
+                                                             @RequestParam(required = false) MultipartFile image3,
+                                                             @RequestParam(required = false) MultipartFile image4,
+                                                             @RequestParam(required = false) MultipartFile image5,
+                                                             //@RequestParam(required = false) List<MultipartFile> multipartFile,
+                                                             @AuthenticationPrincipal User user) {
+
+        ArrayList<MultipartFile> multipartFile = new ArrayList<>();
+
+        if(image1 != null){
+        multipartFile.add(image1);
+        }
+        if(image2 != null){
+            multipartFile.add(image2);
+        }
+        if(image3 != null){
+            multipartFile.add(image3);
+        }
+        if(image4 != null){
+            multipartFile.add(image4);
+        }
+        if(image5 != null){
+            multipartFile.add(image5);
+        }
 
         ArrayList<String> files = new ArrayList<>();
 
-        if(multipartFile != null) {
-            files = S3Service.uploadFile(multipartFile);
-        }
+        files = S3Service.uploadFile(multipartFile);
 
         if(files.size() < 5) {
             for (int i = files.size()+1; i < 6; i++)

@@ -157,6 +157,7 @@ public class ChatroomService {
         UserChatroom requestUserChatroom = createUserChatroom(chatroom);
 
         GetChatroomDto chatroomDto = GetChatroomDto.builder()
+                .userEmail(user.getEmail())
                 .postTitle(chatroom.getPost().getTitle())
                 .createdDate(requestUserChatroom.getCreatedDate())
                 .messageList(

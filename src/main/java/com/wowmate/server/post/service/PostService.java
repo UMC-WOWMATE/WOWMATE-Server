@@ -65,8 +65,9 @@ public class PostService {
                         p.getTag1(), p.getTag2(),
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
-                        p.getUser().getUniv(), Integer.toString(p.getMember()),
+                        p.getUser().getUniv(),
                         user.getImageUrl(),
+                        Integer.toString(p.getMember()),
                         p.getCreatedDate()));
             }
         }
@@ -101,8 +102,9 @@ public class PostService {
                         p.getTag1(), p.getTag2(),
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
-                        p.getUser().getUniv(), Integer.toString(p.getMember()),
+                        p.getUser().getUniv(),
                         user.getImageUrl(),
+                        Integer.toString(p.getMember()),
                         p.getCreatedDate()));
             }
         }
@@ -210,8 +212,9 @@ public class PostService {
                             p.getTag1(), p.getTag2(),
                             p.getTag3(), p.getTag4(),
                             p.getTag5(), p.getLikeNumber(),
-                            p.getUser().getUniv(), Integer.toString(p.getMember()),
+                            p.getUser().getUniv(),
                             user.getImageUrl(),
+                            Integer.toString(p.getMember()),
                             p.getCreatedDate()));
                 }
             }
@@ -247,8 +250,8 @@ public class PostService {
                         p.getTag3(), p.getTag4(),
                         p.getTag5(), p.getLikeNumber(),
                         p.getUser().getUniv(),
-                        Integer.toString(p.getMember()),
                         user.getImageUrl(),
+                        Integer.toString(p.getMember()),
                         p.getCreatedDate()));
             }
         }
