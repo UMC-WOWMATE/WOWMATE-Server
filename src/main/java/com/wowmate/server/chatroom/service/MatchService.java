@@ -9,6 +9,7 @@ import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MatchService {
 
     private final SimpMessagingTemplate template;
@@ -41,12 +43,16 @@ public class MatchService {
 
             GetMessageDto getMessageDto = ifMatchYet(user, chatroom);
 
+            log.info("{}: 매칭 요청 전송", user.getEmail());
+
             template.convertAndSend("/sub/chats/" + roomUuid, getMessageDto);
 
         } else if (chatroom.getMatchType().equals(MatchType.READY)) {
 
             MatchMessageDto postUserInfoDto = ifMatchReady(chatroom.getPost().getUser(), chatroom);
             MatchMessageDto requestUserInfoDto = ifMatchReady(chatroom.getRequestUser(), chatroom);
+
+            log.info("{}: 매칭 요청 수락", user.getEmail());
 
             template.convertAndSend("/sub/chats/{}" + roomUuid, postUserInfoDto);
             template.convertAndSend("/sub/chats/{}" + roomUuid, requestUserInfoDto);

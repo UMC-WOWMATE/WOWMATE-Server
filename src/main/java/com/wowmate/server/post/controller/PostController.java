@@ -28,7 +28,7 @@ public class PostController {
 
     //게시글 전체 조회
     @GetMapping("/posts")
-    public Response<List<PostInfoResDto>, Object> getAllPostList() {
+    public Response<List<PostInfoResDto>, Object> getAllPostList(@AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
             postInfoResDtoList = postService.getAllPostList();

@@ -4,6 +4,7 @@ import com.wowmate.server.chatroom.domain.Chatroom;
 import com.wowmate.server.chatroom.domain.UserChatroom;
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
+import com.wowmate.server.chatroom.dto.GetChatroomValidDto;
 import com.wowmate.server.chatroom.dto.GetMessageDto;
 import com.wowmate.server.chatroom.repository.ChatroomRepository;
 import com.wowmate.server.chatroom.repository.UserChatroomRepository;
@@ -117,26 +118,40 @@ public class ChatroomService {
 
     }
 
+    public GetChatroomValidDto chatroomValid(Long postId, User user) throws BaseException {
+
+        userValidate(user);
+        postValidate(postId);
+
+        Chatroom chatroom = checkExistChatroom(postId, user);
+
+        GetChatroomValidDto getChatroomValidDto;
+
+        if(chatroom == null) {
+            log.info("만들어진 채팅방 존재하지 않음. roomUuid 빈 스트링 반환");
+            getChatroomValidDto = GetChatroomValidDto.builder()
+                    .roomUuid("")
+                    .build();
+        } else {
+            log.info("채팅 중복 생성 불가, 기존 채팅방 반환");
+            getChatroomValidDto = GetChatroomValidDto.builder()
+                    .roomUuid(chatroom.getUuid())
+                    .build();
+        }
+
+        return getChatroomValidDto;
+
+    }
+
 
     // 채팅방 생성
     public GetChatroomDto createChatroom(Long postId, User user) throws BaseException {
 
         userValidate(user);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
+        Post post = postValidate(postId);
 
-        // 생성된 채팅방이 있으면 createChatroom 로직 실행 x
-        // 같은 유저가 채팅 중복 생성을 하면 기존 채팅방 반환
-        Chatroom chatroom = checkExistChatroom(postId, user);
-
-        if(chatroom != null) {
-            log.info("채팅 중복 생성 불가, 기존 채팅방 반환");
-            GetChatroomDto getChatroomDto = getChatroom(chatroom.getUuid(), user);
-            return getChatroomDto;
-        }
-
-        chatroom = new Chatroom(post, user);
+        Chatroom chatroom = new Chatroom(post, user);
         chatroomRepository.save(chatroom);
 
         UserChatroom requestUserChatroom = createUserChatroom(chatroom);
@@ -172,19 +187,18 @@ public class ChatroomService {
 
     }
 
-    private Chatroom checkExistChatroom(Long postId, User user) {
+    private Post postValidate(Long postId) throws BaseException {
 
-        List<Chatroom> chatrooms = chatroomRepository.findByPostId(postId);
-        Chatroom findChatroom = null;
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BaseException(ResponseStatus.NOT_EXIST_POST));
 
-        for (Chatroom chatroom : chatrooms) {
-            if(chatroom.getRequestUser().getId().equals(user.getId())) {
-                findChatroom = chatroom;
-                break;
-            }
-        }
+    }
 
-        return findChatroom;
+    private Chatroom checkExistChatroom(Long postId, User user) throws BaseException {
+
+        return chatroomRepository.findByPostIdAAndRequestUserEmail(postId, user.getEmail())
+                .orElse(null);
+
     }
 
     // 유저 채팅방 2개 생성 후 요청 사용자 채팅방 반환

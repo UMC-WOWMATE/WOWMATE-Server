@@ -2,6 +2,7 @@ package com.wowmate.server.chatroom.controller;
 
 import com.wowmate.server.chatroom.dto.GetChatroomDto;
 import com.wowmate.server.chatroom.dto.GetChatroomListDto;
+import com.wowmate.server.chatroom.dto.GetChatroomValidDto;
 import com.wowmate.server.chatroom.service.ChatroomService;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.Response;
@@ -73,8 +74,24 @@ public class ChatroomController {
 
     }
 
+    @Operation(tags = "Chatroom", description = "채팅방 존재 유무 판단해서 반환")
+    @GetMapping(value = "/chat/{postId}")
+    public Response<GetChatroomValidDto, Object> chatroomValid(@PathVariable("postId") Long postId, @AuthenticationPrincipal User user) {
 
-     // 채팅을 보내야만 채팅방이 만들어지게 구현??
+        try {
+
+            GetChatroomValidDto getChatroomValidDto = chatroomService.chatroomValid(postId, user);
+            return new Response<>(getChatroomValidDto);
+
+        } catch (BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
+        }
+
+    }
+
+    // 채팅을 보내야만 채팅방이 만들어지게 구현??
     @Operation(tags = "Chatroom", description = "채팅방 생성")
     @PostMapping(value = "/chat/create")
     public Response<GetChatroomDto, Object> createChatroom(@RequestParam Long postId, @AuthenticationPrincipal User user) {
@@ -91,9 +108,5 @@ public class ChatroomController {
         }
 
     }
-
-
-
-
 
 }
