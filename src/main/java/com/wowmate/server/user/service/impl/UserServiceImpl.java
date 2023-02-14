@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
                     .birth(signUpRequestDto.getBirth())
                     .gender(signUpRequestDto.getGender())
                     .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
-                    .image_url(signUpRequestDto.getImage_url())
+                    .ImageUrl(signUpRequestDto.getImage_url())
                     .roles(Collections.singletonList("ROLE_ADMIN"))
                     .build();
             /**
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
                     .birth(signUpRequestDto.getBirth())
                     .gender(signUpRequestDto.getGender())
                     .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
-                    //.image_url(signUpRequestDto.getImage_url())
+                    .ImageUrl(signUpRequestDto.getImage_url())
                     .roles(Collections.singletonList("ROLE_USER"))
                     .build();
         }
@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
                 .create_date(currentUser.getCreatedDate())
                 .phoneNumber(currentUser.getPhoneNumber())
                 .birth(currentUser.getBirth())
-                .image_url(currentUser.getImage_url())
+                .image_url(currentUser.getImageUrl())
                 .gender(currentUser.getGender())
                 .build();
 
