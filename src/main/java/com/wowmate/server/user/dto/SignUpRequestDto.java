@@ -32,6 +32,8 @@ public class SignUpRequestDto {
 
     private Gender gender;
 
+    private String Image_url;
+
     private String role;
 
 

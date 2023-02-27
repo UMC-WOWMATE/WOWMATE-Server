@@ -1,13 +1,14 @@
 package com.wowmate.server.post.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor
+@Builder
 public class PostRegisterReqDto {
 
     private String postTitle;
@@ -20,4 +21,9 @@ public class PostRegisterReqDto {
     private String tag5;
     private String postContext;
 
+    private String image1;
+    private String image2;
+    private String image3;
+    private String image4;
+    private String image5;
 }

@@ -12,11 +12,13 @@ import java.time.LocalDateTime;
 @Getter
 public class GetChatroomListDto {
 
+    private String roomUuid;
+
     private String postTitle;
 
     private String lastMessage;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastMessageDate;
 
     private String opponentUserImg;

@@ -1,6 +1,7 @@
 package com.wowmate.server.chatroom.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.wowmate.server.chatroom.domain.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,9 @@ public class GetMessageDto {
 
     private String senderEmail;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Asia/Seoul")
+    private MessageType messageType;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sendTime;
 
 }

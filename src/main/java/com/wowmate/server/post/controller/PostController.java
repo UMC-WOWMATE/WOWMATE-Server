@@ -2,6 +2,7 @@ package com.wowmate.server.post.controller;
 
 import com.wowmate.server.comment.dto.*;
 import com.wowmate.server.post.dto.*;
+import com.wowmate.server.post.service.S3Service;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.post.service.PostService;
 import com.wowmate.server.response.Response;
@@ -9,8 +10,12 @@ import com.wowmate.server.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.wowmate.server.response.ResponseStatus.*;
@@ -20,13 +25,15 @@ import static com.wowmate.server.response.ResponseStatus.*;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final S3Service S3Service;
 
     //게시글 전체 조회
     @GetMapping("/posts")
-    public Response<List<PostInfoResDto>, Object> getAllPostList() {
+    public Response<List<PostInfoResDto>, Object> getAllPostList(@AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getAllPostList();
+            postInfoResDtoList = postService.getAllPostList(user);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -35,12 +42,13 @@ public class PostController {
     }
     //게시글 제목 검색
     @GetMapping("/posts/search")
-    public Response<List<PostInfoResDto>, Object> getPostListByTitle(@RequestParam("title") String postTitle) {
+    public Response<List<PostInfoResDto>, Object> getPostListByTitle(@RequestParam("title") String postTitle, @AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getPostListByTitle(postTitle);
+            postInfoResDtoList = postService.getPostListByTitle(postTitle,user);
             if (postInfoResDtoList.isEmpty())
                 throw new BaseException(NO_RELATED_POST);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
@@ -66,6 +74,7 @@ public class PostController {
         List<PostInfoResDto> postInfoResDtoList;
         try {
             postInfoResDtoList = postService.getAllPostListByUser(user);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         }
         catch (BaseException e) {
@@ -74,18 +83,78 @@ public class PostController {
     }
     //카테고리별 게시글 조회
     @GetMapping("/posts/category")
-    public Response<List<PostInfoResDto>, Object> getAllPostListByCategory(@RequestParam("name") String categoryName) {
+    public Response<List<PostInfoResDto>, Object> getAllPostListByCategory(@RequestParam("name") String categoryName, @AuthenticationPrincipal User user) {
         List<PostInfoResDto> postInfoResDtoList;
         try {
-            postInfoResDtoList = postService.getAllPostListByCategory(categoryName);
+            postInfoResDtoList = postService.getAllPostListByCategory(categoryName,user);
+            Collections.reverse(postInfoResDtoList);
             return new Response<>(postInfoResDtoList);
         } catch (BaseException e) {
             return new Response<>(e.getResponseStatus());
         }
     }
-    //게시글 등록
+    //게시글 등록 @RequestBody PostRegisterReqDto postRegisterReqDto
     @PostMapping("/posts")
-    public Response<PostRegisterResDto, Object> registerPost(@RequestBody PostRegisterReqDto postRegisterReqDto, @AuthenticationPrincipal User user) {
+    public Response<PostRegisterResDto, Object> registerPost(@RequestParam String postTitle,
+                                                             @RequestParam String categoryName,
+                                                             @RequestParam int postMember,
+                                                             @RequestParam String tag1,
+                                                             @RequestParam String tag2,
+                                                             @RequestParam String tag3,
+                                                             @RequestParam String tag4,
+                                                             @RequestParam String tag5,
+                                                             @RequestParam String postContext,
+                                                             @RequestParam(required = false) MultipartFile image1,
+                                                             @RequestParam(required = false) MultipartFile image2,
+                                                             @RequestParam(required = false) MultipartFile image3,
+                                                             @RequestParam(required = false) MultipartFile image4,
+                                                             @RequestParam(required = false) MultipartFile image5,
+                                                             //@RequestParam(required = false) List<MultipartFile> multipartFile,
+                                                             @AuthenticationPrincipal User user) {
+
+        ArrayList<MultipartFile> multipartFile = new ArrayList<>();
+
+        if(image1 != null){
+        multipartFile.add(image1);
+        }
+        if(image2 != null){
+            multipartFile.add(image2);
+        }
+        if(image3 != null){
+            multipartFile.add(image3);
+        }
+        if(image4 != null){
+            multipartFile.add(image4);
+        }
+        if(image5 != null){
+            multipartFile.add(image5);
+        }
+
+        ArrayList<String> files = new ArrayList<>();
+
+        files = S3Service.uploadFile(multipartFile);
+
+        if(files.size() < 5) {
+            for (int i = files.size()+1; i < 6; i++)
+                files.add(null);
+        };
+
+        PostRegisterReqDto postRegisterReqDto = PostRegisterReqDto.builder()
+                                                .postTitle(postTitle)
+                                                .categoryName(categoryName)
+                                                .postMember(postMember)
+                                                .tag1(tag1)
+                                                .tag2(tag2)
+                                                .tag3(tag3)
+                                                .tag4(tag4)
+                                                .tag5(tag5)
+                                                .postContext(postContext)
+                                                .image1(files.get(0))
+                                                .image2(files.get(1))
+                                                .image3(files.get(2))
+                                                .image4(files.get(3))
+                                                .image5(files.get(4))
+                                                .build();
 
         try {
             PostRegisterResDto postRegisterResDto = postService.registerPost(postRegisterReqDto, user);

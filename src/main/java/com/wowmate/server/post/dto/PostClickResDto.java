@@ -13,6 +13,7 @@ public class PostClickResDto {
     private Long postId;
     private String postTitle;
     private String categoryName;
+    private String postMember;
     private String postTag1;
     private String postTag2;
     private String postTag3;
@@ -20,6 +21,11 @@ public class PostClickResDto {
     private String postTag5;
     private int postLikeNumber;
     private String postContext;
+    private String image1;
+    private String image2;
+    private String image3;
+    private String image4;
+    private String image5;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
