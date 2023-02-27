@@ -1,15 +1,31 @@
-# WOWMATE
-## <b>백엔드</b> 레포지토리
+# WOWMATE-Server
+<b>WOWMATE 서버 레포지토리입니다</b>
 
----
+<br>
 
-### 개발환경
+## 개발환경
 - 프레임워크: spring boot 2.7.7
 - build: gradle
 - 언어: java 11
 
+<br>
 
-<br/><br/>
+## 주의사항
+
+- commit, push 하기 전에 pull 하기
+- commit 메세지 규칙
+  * 기능 구현 -> `feat:설명`
+  * 수정 -> `refactor:설명`
+- 브랜치명 규칙
+  * 기능 구현 -> `feat/설명`
+  * 수정 -> `refactor/설명`
+- 작업한 브랜치에서 develop 브랜치로 push하고 PR 하기(checkout으로 브랜치 확인 꼭 하기)
+- 자신이 해야할 일 Issues에 기록하기
+- PR에서 관련된 Issues 번호 표시하기
+- merge 전 다른 팀원 확인 필수
+
+<br>
+
 
 
 ## 📚 Tech Stacks
@@ -30,27 +46,8 @@
 </div>
 </div>
 
-
-<br/><br/>
----
-
-
-### 주의사항
-- commit, push 하기 전에 pull 하기
-- commit 메세지 규칙
-  * 기능 구현 -> `feat:설명`
-  * 수정 -> `refactor:설명`
-- 브랜치명 규칙
-  * 기능 구현 -> `feat/설명`
-  * 수정 -> `refactor/설명`
-- 작업한 브랜치에서 develop 브랜치로 push하고 PR 하기(checkout으로 브랜치 확인 꼭 하기)
-- 자신이 해야할 일 Issues에 기록하기
-- PR에서 관련된 Issues 번호 표시하기
-- merge 전 다른 팀원 확인 필수
-
-
-<br/>
-
+<br>
+<br>
 
 ## 💻 Developers
 
@@ -90,3 +87,11 @@
         </td>
     </tr>
 </table>
+
+<br>
+<br>
+
+## 📦 서비스 아키텍처
+
+<img width="775" alt="image" src="https://user-images.githubusercontent.com/77063375/221619654-e6640e9a-0148-4642-a6f8-debe28f24558.png">
+
