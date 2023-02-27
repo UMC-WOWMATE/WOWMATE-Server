@@ -1,4 +1,4 @@
-name: Build and Deploy for MoramMoram server to AWS EC2
+name: Build and Deploy for WOWMATE server to AWS EC2
 
 # Event Trigger
 on:
