@@ -59,8 +59,11 @@ public class JwtTokenProvider {
     public String createToken(String userUid, List<String> roles) {
         log.info("[createToken] 토큰 생성 시작");
         Claims claims = Jwts.claims().setSubject(userUid);
+        log.info("Jwts에서 claims 생성 claims : {}", claims);
         claims.put("roles", roles);
+        log.info("claims에 roles 추가 claims : {}" , claims);
         Date now = new Date();
+        log.info("Date 생성 Date : {} ", now);
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -69,7 +72,8 @@ public class JwtTokenProvider {
                 .signWith(key)
                 .compact();
 
-        log.info("[createToken] 토큰 생성 완료");
+        log.info("[createToken] 토큰 생성 완료 token : {}", token);
+
         return token;
     }
 
