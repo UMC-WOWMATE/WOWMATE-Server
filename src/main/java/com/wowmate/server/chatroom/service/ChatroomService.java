@@ -131,12 +131,24 @@ public class ChatroomService {
             log.info("만들어진 채팅방 존재하지 않음. roomUuid 빈 스트링 반환");
             getChatroomValidDto = GetChatroomValidDto.builder()
                     .roomUuid("")
+                    .isBlocked(false)
                     .build();
         } else {
-            log.info("채팅 중복 생성 불가, 기존 채팅방 반환");
-            getChatroomValidDto = GetChatroomValidDto.builder()
-                    .roomUuid(chatroom.getUuid())
-                    .build();
+            
+            if(chatroom.getIsBlocked().equals(true)) {
+                log.info("이미 채팅방 차단된 채팅방, 채팅방 생성 불가");
+                getChatroomValidDto = GetChatroomValidDto.builder()
+                        .roomUuid("")
+                        .isBlocked(true)
+                        .build();
+            } else {
+                log.info("채팅 중복 생성 불가, 기존 채팅방 반환");
+                getChatroomValidDto = GetChatroomValidDto.builder()
+                        .roomUuid(chatroom.getUuid())
+                        .isBlocked(false)
+                        .build();
+            }
+            
         }
 
         return getChatroomValidDto;
@@ -177,6 +189,23 @@ public class ChatroomService {
                 .build();
 
         return chatroomDto;
+
+    }
+
+    public List<GetChatroomListDto> blockChatroom(String roomUuid, User user) throws BaseException {
+
+        userValidate(user);
+
+        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
+                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
+
+        // 채팅 차단시 유저 채팅방과 상대방 유저 채팅방 모두 삭제
+        userChatroomRepository.delete(chatroom.getUserChatrooms().get(0));
+        userChatroomRepository.delete(chatroom.getUserChatrooms().get(1));
+
+        chatroom.blockChatroom();
+
+        return getChatroomList(user);
 
     }
 

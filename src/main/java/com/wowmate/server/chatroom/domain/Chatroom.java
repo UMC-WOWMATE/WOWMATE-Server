@@ -45,6 +45,8 @@ public class Chatroom extends BaseEntity {
 
     private String postUserEmail;
 
+    private Boolean isBlocked;
+
 
     //== 생성자 ==//
     public Chatroom(Post post, User requestUser) {
@@ -54,11 +56,18 @@ public class Chatroom extends BaseEntity {
         this.postUserEmail = post.getUser().getEmail();
         this.uuid = UUID.randomUUID().toString();
         this.matchType = MatchType.YET;
+        this.isBlocked = false;
 
     }
 
     public void setMatchType(MatchType matchType) {
         this.matchType = matchType;
+    }
+
+    public void blockChatroom() {
+
+        this.isBlocked = true;
+
     }
 
 }
