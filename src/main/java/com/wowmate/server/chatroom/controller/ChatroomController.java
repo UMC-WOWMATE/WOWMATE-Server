@@ -6,6 +6,7 @@ import com.wowmate.server.chatroom.dto.GetChatroomValidDto;
 import com.wowmate.server.chatroom.service.ChatroomService;
 import com.wowmate.server.response.BaseException;
 import com.wowmate.server.response.Response;
+import com.wowmate.server.response.ResponseStatus;
 import com.wowmate.server.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,8 +48,26 @@ public class ChatroomController {
     public Response<GetChatroomDto, Object> getChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
         try {
+
             GetChatroomDto chatroomDto = chatroomService.getChatroom(roomUuid, user);
             return new Response<>(chatroomDto);
+
+        } catch(BaseException e) {
+
+            return new Response<>(e.getResponseStatus());
+
+        }
+
+    }
+
+    @Operation(tags = "Chatroom", description = "채팅방 차단")
+    @PostMapping(value = "/chat/{roomUuid}/block")
+    public Response<Object, Object> blockChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
+
+        try {
+
+            chatroomService.blockChatroom(roomUuid, user);
+            return new Response<>(ResponseStatus.SUCCESS);
 
         } catch(BaseException e) {
 
@@ -63,6 +82,7 @@ public class ChatroomController {
     public Response<List<GetChatroomListDto>, Object> deleteChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
 
         try {
+
             List<GetChatroomListDto> chatroomListDto = chatroomService.deleteChatroom(roomUuid, user);
             return new Response<>(chatroomListDto);
 

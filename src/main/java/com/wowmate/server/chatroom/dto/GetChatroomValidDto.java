@@ -13,4 +13,6 @@ public class GetChatroomValidDto {
 
     private String roomUuid;
 
+    private Boolean isBlocked;
+
 }
