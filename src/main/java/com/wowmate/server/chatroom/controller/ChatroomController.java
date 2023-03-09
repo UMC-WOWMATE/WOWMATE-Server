@@ -58,6 +58,21 @@ public class ChatroomController {
 
     }
 
+//    @Operation(tags = "Chatroom", description = "채팅방 차단")
+//    @PostMapping(value = "/chat/{roomUuid}/block")
+//    public Response<Object, Object> blockChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {
+//
+//        try {
+//
+//
+//        } catch(BaseException e) {
+//
+//            return new Response<>(e.getResponseStatus());
+//
+//        }
+//
+//    }
+
     @Operation(tags = "Chatroom", description = "채팅방 삭제")
     @DeleteMapping(value = "/chats/{roomUuid}")
     public Response<List<GetChatroomListDto>, Object> deleteChatroom(@PathVariable("roomUuid") String roomUuid, @AuthenticationPrincipal User user) {

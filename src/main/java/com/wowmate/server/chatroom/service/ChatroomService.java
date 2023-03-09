@@ -180,6 +180,23 @@ public class ChatroomService {
 
     }
 
+    public List<GetChatroomListDto> blockChatroom(String roomUuid, User user) throws BaseException {
+
+        userValidate(user);
+
+        Chatroom chatroom = chatroomRepository.findByUuid(roomUuid)
+                .orElseThrow(() -> new BaseException(ResponseStatus.NO_CHATROOM));
+
+        // 채팅 차단시 유저 채팅방과 상대방 유저 채팅방 모두 삭제
+        userChatroomRepository.delete(chatroom.getUserChatrooms().get(0));
+        userChatroomRepository.delete(chatroom.getUserChatrooms().get(1));
+
+        chatroom.blockChatroom();
+
+        return getChatroomList(user);
+
+    }
+
     private void userValidate(User user) throws BaseException {
 
         if (user == null) {
