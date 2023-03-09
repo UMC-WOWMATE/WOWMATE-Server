@@ -44,31 +44,6 @@ public class EmailServiceImpl implements EmailService {
         return message;
     }
 
-    private MimeMessage createAccusation(String accuser, String accused, String category, String ID, String content) throws Exception{
-
-        String to = "gyun1712@gmail.com";
-
-        System.out.println("보내는 대상 : "+to);
-        System.out.println("신고 내용 : "+ category + " " + ID + " " + content);
-
-        MimeMessage  message = emailSender.createMimeMessage();
-        message.addRecipients(Message.RecipientType.TO, to);//보내는 대상
-        message.setSubject("[WOWMATE] 신고 접수");//제목
-
-        Context context = new Context();
-        context.setVariable("accuser", accuser);
-        context.setVariable("accused", accused);
-        context.setVariable("category", category);
-        context.setVariable("ID", ID);
-        context.setVariable("content", content);
-
-        String html = templateEngine.process("accusation", context);
-        message.setText(html, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("gyun1712@gmail.com","WOWMATE"));//보내는 사람
-
-        return message;
-    }
-
     public static String createKey() {
         StringBuffer key = new StringBuffer();
         Random rnd = new Random();
@@ -105,17 +80,5 @@ public class EmailServiceImpl implements EmailService {
             throw new IllegalArgumentException();
         }
         return ePw;
-    }
-
-    @Override
-    public void sendAccusationMessage(String accuser, String accused, String category, String ID, String content) throws Exception {
-        // TODO Auto-generated method stub
-        MimeMessage message = createAccusation(accuser, accused, category, ID, content);
-        try{//예외처리
-            emailSender.send(message);
-        }catch(MailException es){
-            es.printStackTrace();
-            throw new IllegalArgumentException();
-        }
     }
 }
