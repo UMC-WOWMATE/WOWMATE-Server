@@ -134,7 +134,7 @@ public class ChatroomService {
                     .isBlocked(false)
                     .build();
         } else {
-
+            
             if(chatroom.getIsBlocked().equals(true)) {
                 log.info("이미 채팅방 차단된 채팅방, 채팅방 생성 불가");
                 getChatroomValidDto = GetChatroomValidDto.builder()
